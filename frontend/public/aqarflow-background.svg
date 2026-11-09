@@ -1,0 +1,350 @@
+﻿<svg
+      viewBox="0 0 1600 900"
+      preserveAspectRatio="xMidYMid slice"
+      xmlns="http://www.w3.org/2000/svg"
+    ><style>
+:root { --cyan: #27c9eb; }
+.scene-line { fill: none; stroke: var(--cyan); stroke-linecap: round; stroke-linejoin: round; }
+.thin-line { stroke-width: 1; opacity: .5; }
+.soft-line { stroke-width: 2; opacity: .28; }
+.bright-line { stroke-width: 2; opacity: .8; }
+.wire-cube { fill: none; stroke: #36c9e7; stroke-width: 1.5; opacity: .7; }
+.cube-surface { fill: url(#cubeGradient); stroke: #2dbbd8; stroke-width: 1; opacity: .5; }
+.node { fill: #79eaff; filter: url(#glow); }
+.tiny-node { fill: #4bd6ee; opacity: .8; filter: url(#smallGlow); }
+</style>
+
+      <defs>
+
+        <!-- Fond principal -->
+        <linearGradient id="backgroundGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#010409" />
+          <stop offset="48%" stop-color="#06131c" />
+          <stop offset="100%" stop-color="#02070c" />
+        </linearGradient>
+
+        <!-- LumiÃ¨re froide centrale -->
+        <radialGradient id="centralLight" cx="68%" cy="46%" r="48%">
+          <stop offset="0%" stop-color="#0b5369" stop-opacity="0.42" />
+          <stop offset="35%" stop-color="#073143" stop-opacity="0.23" />
+          <stop offset="75%" stop-color="#03131c" stop-opacity="0.08" />
+          <stop offset="100%" stop-color="#02070c" stop-opacity="0" />
+        </radialGradient>
+
+        <!-- DÃ©gradÃ© des cubes -->
+        <linearGradient id="cubeGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#1c91aa" stop-opacity="0.18" />
+          <stop offset="45%" stop-color="#0b4c60" stop-opacity="0.08" />
+          <stop offset="100%" stop-color="#03151e" stop-opacity="0.02" />
+        </linearGradient>
+
+        <!-- DÃ©gradÃ© des lignes -->
+        <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#25d2f4" stop-opacity="0" />
+          <stop offset="38%" stop-color="#25d2f4" stop-opacity="0.75" />
+          <stop offset="70%" stop-color="#8aefff" stop-opacity="0.4" />
+          <stop offset="100%" stop-color="#25d2f4" stop-opacity="0" />
+        </linearGradient>
+
+        <!-- Halo lumineux -->
+        <filter id="glow" x="-300%" y="-300%" width="600%" height="600%">
+          <feGaussianBlur stdDeviation="7" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        <filter id="smallGlow" x="-300%" y="-300%" width="600%" height="600%">
+          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        <!-- Motif de grille -->
+        <pattern
+          id="gridPattern"
+          width="80"
+          height="80"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M 80 0 L 0 0 0 80"
+            fill="none"
+            stroke="#19788f"
+            stroke-width="1"
+            opacity="0.24"
+          />
+        </pattern>
+
+        <!-- Masque pour laisser la partie gauche sombre -->
+        <linearGradient id="leftFade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#02070c" stop-opacity="0.96" />
+          <stop offset="35%" stop-color="#02070c" stop-opacity="0.7" />
+          <stop offset="64%" stop-color="#02070c" stop-opacity="0.12" />
+          <stop offset="100%" stop-color="#02070c" stop-opacity="0" />
+        </linearGradient>
+
+      </defs>
+
+      <!-- Fond -->
+      <rect width="1600" height="900" fill="url(#backgroundGradient)" />
+      <rect width="1600" height="900" fill="url(#centralLight)" />
+
+      <!-- Grille inclinÃ©e en arriÃ¨re-plan -->
+      <g
+        transform="translate(830 410) rotate(-18)"
+        opacity="0.55"
+      >
+        <rect
+          x="-40"
+          y="-70"
+          width="980"
+          height="670"
+          fill="url(#gridPattern)"
+        />
+      </g>
+
+      <!-- Lignes de perspective principales -->
+      <g class="scene-line">
+
+        <path
+          d="M 740 485 L 1580 220"
+          stroke="url(#lineGradient)"
+          stroke-width="2"
+        />
+
+        <path
+          d="M 770 510 L 1600 390"
+          stroke="url(#lineGradient)"
+          stroke-width="1.5"
+        />
+
+        <path
+          d="M 785 530 L 1600 560"
+          stroke="url(#lineGradient)"
+          stroke-width="1"
+        />
+
+        <path
+          d="M 790 555 L 1580 760"
+          stroke="url(#lineGradient)"
+          stroke-width="1"
+        />
+
+        <path
+          d="M 920 450 L 1260 0"
+          class="soft-line"
+        />
+
+        <path
+          d="M 970 460 L 1440 0"
+          class="thin-line"
+        />
+
+        <path
+          d="M 1040 460 L 1590 80"
+          class="thin-line"
+        />
+
+        <path
+          d="M 1100 470 L 1590 300"
+          class="bright-line"
+        />
+
+      </g>
+
+      <!-- Petits segments horizontaux de donnÃ©es -->
+      <g class="scene-line">
+
+        <path d="M 960 174 H 1175" class="thin-line" />
+        <path d="M 1010 194 H 1330" class="soft-line" />
+        <path d="M 1160 218 H 1500" class="thin-line" />
+
+        <path d="M 880 285 H 1055" class="thin-line" />
+        <path d="M 1210 286 H 1420" class="bright-line" />
+        <path d="M 1350 316 H 1585" class="thin-line" />
+
+        <path d="M 930 365 H 1150" class="soft-line" />
+        <path d="M 1260 376 H 1535" class="thin-line" />
+
+        <path d="M 1030 650 H 1300" class="thin-line" />
+        <path d="M 1175 685 H 1510" class="soft-line" />
+
+      </g>
+
+      <!-- Grande structure gÃ©omÃ©trique centrale -->
+      <g transform="translate(1010 260)">
+
+        <!-- Face avant -->
+        <polygon
+          class="cube-surface"
+          points="0,70 158,112 158,330 0,288"
+        />
+
+        <!-- Face droite -->
+        <polygon
+          class="cube-surface"
+          points="158,112 252,60 252,275 158,330"
+        />
+
+        <!-- Face supÃ©rieure -->
+        <polygon
+          class="cube-surface"
+          points="0,70 96,18 252,60 158,112"
+        />
+
+        <!-- ArÃªtes -->
+        <polyline
+          class="wire-cube"
+          points="0,70 96,18 252,60 252,275 158,330 0,288 0,70"
+        />
+
+        <line class="wire-cube" x1="158" y1="112" x2="158" y2="330" />
+        <line class="wire-cube" x1="0" y1="70" x2="158" y2="112" />
+
+        <!-- Lignes internes -->
+        <line
+          class="scene-line thin-line"
+          x1="32"
+          y1="105"
+          x2="134"
+          y2="132"
+        />
+
+        <line
+          class="scene-line thin-line"
+          x1="32"
+          y1="145"
+          x2="134"
+          y2="172"
+        />
+
+        <line
+          class="scene-line thin-line"
+          x1="32"
+          y1="185"
+          x2="134"
+          y2="212"
+        />
+
+        <line
+          class="scene-line thin-line"
+          x1="32"
+          y1="225"
+          x2="134"
+          y2="252"
+        />
+
+      </g>
+
+      <!-- Petit cube flottant -->
+      <g transform="translate(830 420)">
+
+        <polygon
+          class="cube-surface"
+          points="0,34 76,54 76,137 0,116"
+        />
+
+        <polygon
+          class="cube-surface"
+          points="76,54 126,27 126,108 76,137"
+        />
+
+        <polygon
+          class="cube-surface"
+          points="0,34 50,8 126,27 76,54"
+        />
+
+        <polyline
+          class="wire-cube"
+          points="0,34 50,8 126,27 126,108 76,137 0,116 0,34"
+        />
+
+        <line
+          class="wire-cube"
+          x1="76"
+          y1="54"
+          x2="76"
+          y2="137"
+        />
+
+      </g>
+
+      <!-- Structure verticale fine Ã  droite -->
+      <g class="wire-cube" opacity="0.55">
+
+        <path d="M 1250 135 L 1350 165 L 1350 385 L 1250 350 Z" />
+        <path d="M 1350 165 L 1410 130 L 1410 345 L 1350 385" />
+        <path d="M 1250 135 L 1310 100 L 1410 130" />
+
+        <line x1="1280" y1="145" x2="1280" y2="360" />
+        <line x1="1310" y1="155" x2="1310" y2="370" />
+
+      </g>
+
+      <!-- RÃ©seau de nÅ“uds et petites connexions -->
+      <g class="scene-line">
+
+        <path d="M 1162 182 L 1248 145 L 1320 162" class="thin-line" />
+        <path d="M 1150 238 L 1248 270 L 1390 235" class="thin-line" />
+        <path d="M 1080 330 L 1190 390 L 1280 355" class="soft-line" />
+        <path d="M 990 570 L 1090 615 L 1220 598" class="thin-line" />
+        <path d="M 1170 520 L 1320 470 L 1480 500" class="thin-line" />
+
+      </g>
+
+      <!-- Points lumineux -->
+      <g>
+
+        <circle class="node" cx="1158" cy="181" r="4" />
+        <circle class="node" cx="1248" cy="145" r="3" />
+        <circle class="node" cx="1320" cy="162" r="3" />
+        <circle class="node" cx="1190" cy="390" r="3" />
+        <circle class="node" cx="1280" cy="355" r="4" />
+        <circle class="node" cx="1090" cy="615" r="3" />
+
+        <circle class="tiny-node" cx="930" cy="130" r="2" />
+        <circle class="tiny-node" cx="1050" cy="110" r="2" />
+        <circle class="tiny-node" cx="1400" cy="205" r="2" />
+        <circle class="tiny-node" cx="1510" cy="350" r="2" />
+        <circle class="tiny-node" cx="1450" cy="620" r="2" />
+        <circle class="tiny-node" cx="1380" cy="730" r="2" />
+        <circle class="tiny-node" cx="1010" cy="720" r="2" />
+        <circle class="tiny-node" cx="880" cy="585" r="2" />
+
+      </g>
+
+      <!-- Petits fragments dÃ©coratifs -->
+      <g
+        fill="none"
+        stroke="#39cae7"
+        stroke-width="1"
+        opacity="0.7"
+      >
+        <path d="M 760 240 l 28 -10 l 18 7 l -27 11 z" />
+        <path d="M 1450 260 l 38 -13 l 23 8 l -39 15 z" />
+        <path d="M 1350 560 l 32 -10 l 20 7 l -34 12 z" />
+        <path d="M 900 700 l 35 -11 l 22 7 l -36 13 z" />
+      </g>
+
+      <!-- Assombrissement de la partie gauche -->
+      <rect
+        width="1600"
+        height="900"
+        fill="url(#leftFade)"
+      />
+
+      <!-- Vignette finale -->
+      <rect
+        width="1600"
+        height="900"
+        fill="none"
+        stroke="#02070c"
+        stroke-width="80"
+        opacity="0.45"
+      />
+
+    </svg>

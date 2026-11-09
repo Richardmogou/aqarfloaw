@@ -1,4 +1,4 @@
-﻿const STATS = [
+const STATS = [
   { label: "Available properties", value: "—", tone: "bg-primary/10 text-primary" },
   { label: "New inquiries", value: "—", tone: "bg-success/10 text-success" },
   { label: "Upcoming visits", value: "—", tone: "bg-warning/10 text-warning" },
