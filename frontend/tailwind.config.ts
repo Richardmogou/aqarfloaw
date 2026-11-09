@@ -18,7 +18,7 @@ const config: Config = {
         sidebar: { DEFAULT: v("sidebar"), foreground: v("sidebar-foreground"), active: v("sidebar-active") },
       },
       borderRadius: { lg: "0.75rem", md: "0.5rem", sm: "0.375rem" },
-    },
+    }, 
   },
   plugins: [require("tailwindcss-animate")],
 };
