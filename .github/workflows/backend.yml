@@ -20,19 +20,6 @@ jobs:
     name: Pytest
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: aqarflow
-          POSTGRES_PASSWORD: aqarflow
-          POSTGRES_DB: aqarflow_test
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd "pg_isready -U aqarflow"
-          --health-interval 5s
-          --health-retries 10
-
     defaults:
       run:
         working-directory: backend
@@ -49,16 +36,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run migrations
-        run: alembic upgrade head
-        env:
-          DATABASE_URL: postgresql+psycopg://aqarflow:aqarflow@localhost:5432/aqarflow_test
-          SECRET_KEY: ci-secret-key
-
       - name: Run tests
         run: pytest
         env:
-          DATABASE_URL: postgresql+psycopg://aqarflow:aqarflow@localhost:5432/aqarflow_test
+          DATABASE_URL: postgresql+psycopg://placeholder:placeholder@localhost:5432/placeholder
           SECRET_KEY: ci-secret-key
 
   build-and-push:
