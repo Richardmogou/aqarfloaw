@@ -6,8 +6,13 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: richardmogou/aqarfloaw
+
 jobs:
-  build:
+  test:
+    name: Test & Build Image
     runs-on: ubuntu-latest
 
     steps:
