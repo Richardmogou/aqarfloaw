@@ -1,13 +1,13 @@
-"use client";
+﻿"use client";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const OPTIONS = [
-  { value: "light", label: "Clair", icon: Sun },
-  { value: "dark", label: "Sombre", icon: Moon },
-  { value: "system", label: "Système", icon: Monitor },
+  { value: "light", label: "Light", icon: Sun },
+  { value: "dark", label: "Dark", icon: Moon },
+  { value: "system", label: "System", icon: Monitor },
 ] as const;
 
 export function ThemeToggle() {
@@ -17,7 +17,7 @@ export function ThemeToggle() {
   if (!mounted) return <div className="h-9 w-28" aria-hidden />;
 
   return (
-    <div role="radiogroup" aria-label="Thème" className="flex rounded-md border border-border bg-card p-0.5">
+    <div role="radiogroup" aria-label="Theme" className="flex rounded-md border border-border bg-card p-0.5">
       {OPTIONS.map(({ value, label, icon: Icon }) => (
         <button
           key={value}

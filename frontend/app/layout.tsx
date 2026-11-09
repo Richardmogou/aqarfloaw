@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-export const metadata: Metadata = { title: "AqarFlow", description: "L'immobilier plus loin, ensemble." };
+export const metadata: Metadata = { title: "AqarFlow", description: "Real estate, connected." };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
