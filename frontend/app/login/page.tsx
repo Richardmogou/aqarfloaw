@@ -34,7 +34,7 @@ export default async function LoginPage({ searchParams }: { searchParams: { next
       </aside>
 
       {/* Formulaire */}
-      <section className="relative flex items-center justify-center bg-background p-6 sm:p-10">
+      <section className="relative flex min-h-screen items-start justify-center overflow-y-auto bg-background p-6 pt-16 sm:items-center sm:p-10">
         <div className="absolute right-4 top-4 flex items-center gap-2">
           <LocaleSwitcher />
           <ThemeToggle />
