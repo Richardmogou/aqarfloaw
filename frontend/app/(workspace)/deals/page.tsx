@@ -1,5 +1,7 @@
-﻿import { PlaceholderPage } from "@/components/placeholder-page";
+import { PlaceholderPage } from "@/components/placeholder-page";
+import { getT } from "@/lib/i18n/server";
 
-export default function DealsPage() {
-  return <PlaceholderPage title="Deals" description="Track transactions from inquiry through closing." day="Day 6" />;
+export default async function DealsPage() {
+  const t = await getT();
+  return <PlaceholderPage title={t("workspace.deals.title")} description={t("workspace.deals.description")} day="6" />;
 }
