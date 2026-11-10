@@ -1,65 +1,37 @@
-# Day 2 — Login, roles and protected routes
+# Day 2 — Authentication
 
-Users can sign in and out, workspace pages require authentication, and the Admin and Agent roles see different parts of the application. Permissions are enforced by the backend, not only by hiding menu items.
+Users can sign in to their agency workspace, and the API exposes endpoints to sign in, read the current user and sign out.
 
 ## Login page
 
-The login page is available at `http://localhost:3000/login`.
+The login page is available at `http://localhost:3000/login`. It asks for an email and a password, and offers a language switch (EN / FR) and a theme switch (light, dark, system).
 
-![Login page](../screenshots/day-2/login-page.png)
-
-Invalid credentials are rejected with a clear error message.
-
-![Login error message](../screenshots/day-2/login-error.png)
-
-## Protected routes
-
-Opening a workspace page without being signed in redirects to the login page.
-
-![Redirect to login when signed out](../screenshots/day-2/unauthenticated-redirect.png)
-
-## Admin view
-
-An Admin sees the full navigation.
-
-![Admin dashboard with full navigation](../screenshots/day-2/admin-dashboard.png)
-
-## Agent view
-
-An Agent sees only the areas allowed by the role rules.
-
-![Agent dashboard with restricted navigation](../screenshots/day-2/agent-dashboard.png)
-
-The backend also refuses Agent requests to Admin-only endpoints (HTTP 403).
-
-![Agent request refused by the API](../screenshots/day-2/agent-forbidden-api.png)
+![Login page](../screenshots/day-2/aqarflow_loginpage.png)
 
 ## Authentication API
 
-The authentication endpoints (login, logout, current user) are documented in the interactive API documentation.
+The authentication endpoints are available in the interactive API documentation at `http://localhost:8000/docs`.
 
-![Authentication endpoints in Swagger](../screenshots/day-2/api-auth-docs.png)
+### Login
 
-## Automated tests
+`POST /api/v1/auth/login` receives the email and the password as JSON.
 
-The backend authentication tests pass with `pytest`.
+![Login endpoint in Swagger](../screenshots/day-2/swagger_login.png)
 
-![Backend tests passing](../screenshots/day-2/backend-tests.png)
+### Current user
 
-## Interface preferences
+After signing in, `GET /api/v1/auth/me` returns the signed-in user with the `agent` role (HTTP 200).
 
-The interface is in English by default and can be switched to French. Light and dark themes are available.
+![Current user endpoint in Swagger](../screenshots/day-2/swagger_auth_me.png)
 
-![Dashboard in dark mode](../screenshots/day-2/dashboard-dark.png)
+### Logout
 
-![Dashboard in French](../screenshots/day-2/dashboard-fr.png)
+`POST /api/v1/auth/logout` ends the current session (HTTP 204).
 
-## Continuous integration
+![Logout endpoint in Swagger](../screenshots/day-2/swagger_logout.png)
 
-The backend and frontend workflows run on every push.
+### Logout from all sessions
 
-![GitHub Actions checks passing](../screenshots/day-2/ci-checks.png)
+`POST /api/v1/auth/logout-all` ends all sessions of the user (HTTP 204).
 
-## Known limitations
-
-Describe here what is not finished yet.
+![Logout-all endpoint in Swagger](../screenshots/day-2/swagger_logout_all.png)
