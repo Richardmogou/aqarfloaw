@@ -1,7 +1,7 @@
 import { PlaceholderPage } from "@/components/placeholder-page";
-import { requireUser } from "@/lib/auth";
+import { getT } from "@/lib/i18n/server";
 
 export default async function TeamPage() {
-  await requireUser("admin");
-  return <PlaceholderPage title="Team" description="View your agency agents." day="Day 5" />;
+  const t = await getT();
+  return <PlaceholderPage title={t("workspace.team.title")} description={t("workspace.team.description")} day="5" />;
 }

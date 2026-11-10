@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from datetime import datetime, timezone
 
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, Header, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -16,9 +16,9 @@ CSRF_HEADER_VALUE = "aqarflow"
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 
 
-def csrf_guard(request: Request) -> None:
+def csrf_guard(request: Request, x_requested_with: str | None = Header(default=None)) -> None:
     # A custom header cannot be sent cross-origin without a CORS preflight, which forged forms cannot pass.
-    if request.method not in SAFE_METHODS and request.headers.get(CSRF_HEADER) != CSRF_HEADER_VALUE:
+    if request.method not in SAFE_METHODS and x_requested_with != CSRF_HEADER_VALUE:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Missing CSRF header")
 
 

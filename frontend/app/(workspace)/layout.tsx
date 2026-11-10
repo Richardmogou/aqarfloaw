@@ -7,7 +7,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   const user = await requireUser();
   return (
     <div className="flex min-h-screen">
-      <Sidebar role={user.role} />
+      <Sidebar />
       <div className="relative flex min-w-0 flex-1 flex-col">
         <AqarFlowBackground />
         <div className="relative z-10">

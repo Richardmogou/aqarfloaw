@@ -1,64 +1,88 @@
-const STATS = [
-  {
-    label: "Available properties",
-    value: "—",
-    cardClass: "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300",
-    blobClass: "bg-blue-500",
-    delay: "animation-delay-[0ms]",
-  },
-  {
-    label: "New inquiries",
-    value: "—",
-    cardClass: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    blobClass: "bg-emerald-500",
-    delay: "animation-delay-[80ms]",
-  },
-  {
-    label: "Upcoming visits",
-    value: "—",
-    cardClass: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
-    blobClass: "bg-amber-500",
-    delay: "animation-delay-[160ms]",
-  },
-  {
-    label: "Open deals",
-    value: "—",
-    cardClass: "border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-300",
-    blobClass: "bg-violet-500",
-    delay: "animation-delay-[240ms]",
-  },
-];
+import { Building2, CalendarCheck, CalendarDays, ClipboardCheck, FileText, MapPin, Plus, UserCheck, UserPlus, Users } from "lucide-react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatCard } from "@/components/ui/stat-card";
+import { Thumb } from "@/components/ui/thumb";
+import { btn } from "@/components/ui/styles";
+import { fmtPkr } from "@/lib/format";
+import { LEADS, PROPERTY_STATUS, VISITS, WORKSPACE_PROPERTIES, conflictIds, isUpcoming } from "@/lib/mock-data";
+import { getT } from "@/lib/i18n/server";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const t = await getT();
+
+  const TASKS = [
+    { icon: UserPlus, title: t("workspace.dashboard.newLead"), sub: t("workspace.dashboard.leadSub1"), ago: t("workspace.dashboard.ago1") },
+    { icon: CalendarCheck, title: t("workspace.visits.title"), sub: "Islamabad", ago: t("workspace.dashboard.ago1") },
+    { icon: ClipboardCheck, title: t("workspace.leads.title"), sub: t("workspace.dashboard.leadSub2"), ago: t("workspace.dashboard.ago2") },
+    { icon: UserCheck, title: t("workspace.dashboard.leadAssigned"), sub: t("workspace.dashboard.leadSub2"), ago: t("workspace.dashboard.ago2") },
+  ];
+
+  const published = WORKSPACE_PROPERTIES.filter((p) => p.published);
+  const available = published.filter((p) => p.status === "available").length;
+  const newLeads = LEADS.filter((l) => l.stage === "new").length;
+  const unassigned = LEADS.filter((l) => !l.agentId).length;
+  const upcoming = VISITS.filter((v) => isUpcoming(v.status)).length;
+  const conflicts = conflictIds(VISITS).size;
+
   return (
-    <div className="animate-fade-in space-y-8">
-      <div className="animate-slide-up">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Overview</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Here&apos;s an overview of your activity today.</p>
-      </div>
+    <>
+      <PageHeader title={t("workspace.dashboard.title")} description={t("workspace.dashboard.description")} />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {STATS.map((stat, i) => (
-          <div
-            key={stat.label}
-            style={{ animationDelay: `${i * 80}ms` }}
-            className={`animate-slide-up group relative overflow-hidden rounded-2xl border p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${stat.cardClass}`}
-          >
-            {/* Glow blob */}
-            <div className={`absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-25 blur-2xl transition-opacity duration-300 group-hover:opacity-40 ${stat.blobClass}`} />
-
-            {/* Top accent bar */}
-            <div className={`absolute left-0 top-0 h-0.5 w-full ${stat.blobClass} opacity-60`} />
-
-            <p className="relative text-xs font-semibold uppercase tracking-wider opacity-75">{stat.label}</p>
-            <p className="relative mt-4 text-4xl font-bold tracking-tight">{stat.value}</p>
-
-            {/* Bottom shimmer on hover */}
-            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-current to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-30" />
-          </div>
-        ))}
+        <StatCard label={t("nav.properties")} value={available} hint={`${published.length} / ${WORKSPACE_PROPERTIES.length}`} icon={Building2} tone="primary" />
+        <StatCard label={t("workspace.dashboard.newLeads")} value={newLeads} hint={t("workspace.dashboard.noAgent", { n: unassigned })} icon={Users} tone="success" />
+        <StatCard label={t("nav.visits")} value={upcoming} hint={conflicts ? `${conflicts} conflict` : "No conflict"} icon={CalendarDays} tone="warning" />
+        <StatCard label={t("workspace.dashboard.openDeals")} value="—" hint={t("workspace.dashboard.dealHint")} icon={FileText} tone="neutral" />
       </div>
-    </div>
+
+      <div className="mt-6 grid gap-4 xl:grid-cols-[1fr_1fr_0.8fr]">
+        <Card title={t("nav.leads")} href="/leads">
+          <ul className="divide-y divide-border">
+            {TASKS.map((task) => (
+              <li key={task.title} className="flex items-center gap-3 py-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+                  <task.icon className="h-5 w-5" aria-hidden />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium">{task.title}</p>
+                  <p className="truncate text-sm text-muted-foreground">{task.sub}</p>
+                </div>
+                <span className="shrink-0 text-xs text-muted-foreground">{task.ago}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <Card title={t("nav.properties")} href="/properties">
+          <ul className="divide-y divide-border">
+            {WORKSPACE_PROPERTIES.slice(0, 3).map((p) => (
+              <li key={p.id}>
+                <Link href={`/properties/${p.id}`} className="flex items-center gap-3 py-3 hover:opacity-80">
+                  <Thumb src={p.image} alt="" className="h-14 w-16 rounded-lg" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{p.title}</p>
+                    <p className="flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="h-3.5 w-3.5" /> {p.city}</p>
+                    <p className="text-sm font-semibold">{fmtPkr(p.price)}</p>
+                  </div>
+                  <Badge tone={PROPERTY_STATUS[p.status].tone}>{PROPERTY_STATUS[p.status].label}</Badge>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <Card className="flex flex-col justify-between gap-6 border-transparent bg-primary text-primary-foreground">
+          <div>
+            <h2 className="text-xl font-semibold leading-snug">{t("workspace.dashboard.cta")}</h2>
+          </div>
+          <Link href="/properties/new" className={`${btn.outline} border-transparent text-foreground`}>
+            <Plus className="h-4 w-4" /> {t("workspace.dashboard.ctaBtn")}
+          </Link>
+        </Card>
+      </div>
+    </>
   );
 }
