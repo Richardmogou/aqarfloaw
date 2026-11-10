@@ -6,12 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { FilterSelect, SearchField } from "@/components/ui/filter-select";
 import { field, td, th } from "@/components/ui/styles";
 import { Thumb } from "@/components/ui/thumb";
+import { useT } from "@/lib/i18n/provider";
 import { AGENTS, LEADS, LEAD_STAGE, SOURCE_LABEL, agentName, getProperty } from "@/lib/mock-data";
 
 const opts = (o: Record<string, { label: string } | string>) =>
   Object.entries(o).map(([value, v]) => ({ value, label: typeof v === "string" ? v : v.label }));
 
 export function LeadsTable() {
+  const t = useT();
   const [f, setF] = useState({ q: "", stage: "", source: "", agent: "" });
   const [assigned, setAssigned] = useState<Record<number, string>>({});
   const set = (k: keyof typeof f) => (v: string) => setF((s) => ({ ...s, [k]: v }));
@@ -30,17 +32,25 @@ export function LeadsTable() {
   return (
     <>
       <div className="mb-4 flex flex-wrap gap-3">
-        <SearchField placeholder="Rechercher un prospect…" value={f.q} onChange={set("q")} />
-        <FilterSelect label="Toutes les étapes" value={f.stage} onChange={set("stage")} options={opts(LEAD_STAGE)} />
-        <FilterSelect label="Toutes les origines" value={f.source} onChange={set("source")} options={opts(SOURCE_LABEL)} />
-        <FilterSelect label="Tous les agents" value={f.agent} onChange={set("agent")}
-          options={[{ value: "none", label: "À attribuer" }, ...AGENTS.map((a) => ({ value: a.id, label: a.name }))]} />
+        <SearchField placeholder={t("workspace.leads.searchPlaceholder")} value={f.q} onChange={set("q")} />
+        <FilterSelect label={t("workspace.leads.allStages")} value={f.stage} onChange={set("stage")} options={opts(LEAD_STAGE)} />
+        <FilterSelect label={t("workspace.leads.allSources")} value={f.source} onChange={set("source")} options={opts(SOURCE_LABEL)} />
+        <FilterSelect label={t("workspace.leads.allAgents")} value={f.agent} onChange={set("agent")}
+          options={[{ value: "none", label: t("workspace.leads.unassigned") }, ...AGENTS.map((a) => ({ value: a.id, label: a.name }))]} />
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <table className="w-full min-w-[900px] text-sm">
           <thead>
-            <tr><th className={th}>Nom</th><th className={th}>Bien intéressé</th><th className={th}>Étape</th><th className={th}>Origine</th><th className={th}>Date de demande</th><th className={th}>Agent assigné</th><th className={th}><span className="sr-only">Actions</span></th></tr>
+            <tr>
+              <th className={th}>{t("workspace.leads.colName")}</th>
+              <th className={th}>{t("workspace.leads.colProperty")}</th>
+              <th className={th}>{t("workspace.leads.colStage")}</th>
+              <th className={th}>{t("workspace.leads.colSource")}</th>
+              <th className={th}>{t("workspace.leads.colDate")}</th>
+              <th className={th}>{t("workspace.leads.colAgent")}</th>
+              <th className={th}><span className="sr-only">Actions</span></th>
+            </tr>
           </thead>
           <tbody>
             {rows.map((l) => {
@@ -62,21 +72,23 @@ export function LeadsTable() {
                     {a ? (
                       <span className="flex items-center gap-2"><Avatar name={agentName(a)!} />{agentName(a)}</span>
                     ) : (
-                      <select aria-label={`Attribuer ${l.name} à un agent`} defaultValue="" onChange={(e) => setAssigned((s) => ({ ...s, [l.id]: e.target.value }))} className={`${field} h-8 text-xs`}>
-                        <option value="" disabled>Attribuer…</option>
+                      <select aria-label={`${t("workspace.leads.assign")} ${l.name}`} defaultValue="" onChange={(e) => setAssigned((s) => ({ ...s, [l.id]: e.target.value }))} className={`${field} h-8 text-xs`}>
+                        <option value="" disabled>{t("workspace.leads.assignTo")}</option>
                         {AGENTS.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
                       </select>
                     )}
                   </td>
-                  <td className={td}><Link href={`/leads/${l.id}`} className="text-primary hover:underline">Ouvrir</Link></td>
+                  <td className={td}><Link href={`/leads/${l.id}`} className="text-primary hover:underline">{t("workspace.leads.open")}</Link></td>
                 </tr>
               );
             })}
-            {rows.length === 0 && <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">Aucun prospect ne correspond à ces filtres.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">{t("workspace.leads.empty")}</td></tr>}
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-sm text-muted-foreground">{rows.length} prospect{rows.length > 1 ? "s" : ""} affiché{rows.length > 1 ? "s" : ""} sur {LEADS.length}</p>
+      <p className="mt-3 text-sm text-muted-foreground">
+        {t(rows.length > 1 ? "workspace.leads.countPlural" : "workspace.leads.count", { n: rows.length, total: LEADS.length })}
+      </p>
     </>
   );
 }
