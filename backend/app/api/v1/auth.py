@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_session, get_current_user
+from app.api.deps import csrf_guard, get_current_session, get_current_user
 from app.core.config import settings
 from app.core.db import get_db
 from app.core.security import (DUMMY_PASSWORD_HASH, hash_session_token,
@@ -12,7 +12,8 @@ from app.core.security import (DUMMY_PASSWORD_HASH, hash_session_token,
 from app.models import AuthSession, User
 from app.schemas.auth import CurrentUser, LoginRequest
 
-router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/auth", dependencies=[Depends(csrf_guard)])
+login_router = APIRouter(prefix="/auth")
 
 
 def _clear_session_cookie(response: Response) -> None:
@@ -20,7 +21,7 @@ def _clear_session_cookie(response: Response) -> None:
                            secure=settings.cookie_secure, samesite="lax")
 
 
-@router.post("/login", status_code=status.HTTP_204_NO_CONTENT)
+@login_router.post("/login", status_code=status.HTTP_204_NO_CONTENT)
 def login(payload: LoginRequest, response: Response, db: Session = Depends(get_db)) -> None:
     user = db.scalar(select(User).where(User.email == payload.email))
     password_ok = verify_password(payload.password, user.password_hash if user else DUMMY_PASSWORD_HASH)
