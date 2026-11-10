@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import type { Role } from "@/lib/auth";
 import { SidebarNav } from "./sidebar";
 
-export function MobileNav() {
+export function MobileNav({ role }: { role: Role }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -29,7 +30,7 @@ export function MobileNav() {
             >
               <X className="h-5 w-5" />
             </button>
-            <SidebarNav onNavigate={() => setOpen(false)} />
+            <SidebarNav role={role} onNavigate={() => setOpen(false)} />
           </div>
         </>
       )}
