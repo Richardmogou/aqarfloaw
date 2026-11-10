@@ -34,7 +34,7 @@ export function PublicNavbar() {
           <LocaleSwitcher />
           <ThemeToggle />
           {/* TODO J2 : /login */}
-          <Link href="/dashboard" className="hidden rounded-lg border border-border px-4 py-2 text-sm font-medium hover:border-primary lg:block">
+          <Link href="/login" className="hidden rounded-lg border border-border px-4 py-2 text-sm font-medium hover:border-primary md:block">
             {t("nav.agencySpace")}
           </Link>
           <button
@@ -49,12 +49,15 @@ export function PublicNavbar() {
       </div>
 
       {open && (
-        <nav aria-label={t("common.mobileNav")} className="border-t border-border px-4 py-3 md:hidden">
-          {[...LINKS, { href: "/dashboard", key: "nav.agencySpace" }].map((l) => (
+        <nav aria-label={t("common.mobileNav")} className="absolute left-0 right-0 z-50 border-t border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur md:hidden">
+          {LINKS.map((l) => (
             <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block rounded-md px-2 py-2.5 text-sm hover:bg-muted">
               {t(l.key)}
             </Link>
           ))}
+          <Link href="/login" onClick={() => setOpen(false)} className="mt-2 block rounded-lg border border-primary px-2 py-2.5 text-center text-sm font-semibold text-primary hover:bg-primary/10">
+            {t("nav.agencySpace")}
+          </Link>
         </nav>
       )}
     </header>
