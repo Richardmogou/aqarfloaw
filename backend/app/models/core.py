@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import (Boolean, DateTime, ForeignKey, Index, Integer, Numeric,
+from sqlalchemy import (Boolean, CheckConstraint, DateTime, ForeignKey, Index, Integer, Numeric,
                         String, Text, UniqueConstraint, func)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -32,6 +32,7 @@ class Agency(Base, TimestampMixin):
 
 class User(Base, TimestampMixin):
     __tablename__ = "users"
+    __table_args__ = (CheckConstraint("email = lower(email)", name="ck_users_email_lowercase"),)
     id: Mapped[uuid.UUID] = pk()
     agency_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("agencies.id"), index=True)
     full_name: Mapped[str] = mapped_column(String(200))
@@ -40,6 +41,17 @@ class User(Base, TimestampMixin):
     password_hash: Mapped[str] = mapped_column(String(255))
     role: Mapped[str] = mapped_column(String(20), default="agent")  # admin | agent
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class AuthSession(Base):
+    __tablename__ = "sessions"
+    id: Mapped[uuid.UUID] = pk()
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    user: Mapped[User] = relationship()
 
 
 class Property(Base, TimestampMixin):

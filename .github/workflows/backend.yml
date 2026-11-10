@@ -14,18 +14,40 @@ jobs:
   test:
     name: Test & Build Image
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: aqarflow
+          POSTGRES_PASSWORD: aqarflow
+          POSTGRES_DB: aqarflow
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U aqarflow"
+          --health-interval 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://aqarflow:aqarflow@localhost:5432/aqarflow
+      TEST_DATABASE_URL: postgresql+psycopg://aqarflow:aqarflow@localhost:5432/aqarflow
+      SECRET_KEY: ci-secret-key
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run tests
+      - name: Install dependencies
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      - name: Check migrations (upgrade, downgrade, upgrade)
         working-directory: backend
         run: |
-          pip install -r requirements.txt
-          pytest
-        env:
-          DATABASE_URL: postgresql+psycopg://placeholder:placeholder@localhost:5432/placeholder
-          SECRET_KEY: ci-secret-key
+          alembic upgrade head
+          alembic downgrade base
+          alembic upgrade head
+
+      - name: Run tests
+        working-directory: backend
+        run: pytest
 
       - name: Build the Docker image
         run: docker build ./backend --file backend/Dockerfile --tag aqarflow-backend:$(date +%s)
