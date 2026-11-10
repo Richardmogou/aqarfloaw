@@ -40,7 +40,7 @@ export default async function PropertyPage({ params }: { params: { id: string } 
       <div className="grid gap-4 xl:grid-cols-[1.4fr_1fr_0.9fr]">
         <div className="space-y-4">
           <Gallery images={images} alt={p.title} />
-          <Card title={t("workspace.properties.description")}>
+          <Card title={t("workspace.properties.sectionDescription")}>
             <p className="text-sm text-muted-foreground">
               {t("workspace.properties.descBody", { locality: p.locality, city: p.city })}
             </p>
