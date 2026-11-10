@@ -7,6 +7,12 @@ class Settings(BaseSettings):
     secret_key: str = ""
     cors_origins: str = "http://localhost:3000"
     environment: str = "development"
+    session_cookie_name: str = "aqarflow_session"
+    session_ttl_days: int = 7
+
+    @property
+    def cookie_secure(self) -> bool:
+        return self.environment != "development"
 
     @property
     def cors_list(self) -> list[str]:
