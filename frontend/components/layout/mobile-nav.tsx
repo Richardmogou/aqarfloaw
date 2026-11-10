@@ -1,11 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Menu, X } from "lucide-react";
-import type { Role } from "@/lib/auth";
 import { SidebarNav } from "./sidebar";
 
-export function MobileNav({ role }: { role: Role }) {
+export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
   return (
     <>
       <button
@@ -16,13 +20,13 @@ export function MobileNav({ role }: { role: Role }) {
         <Menu className="h-5 w-5" />
       </button>
 
-      {open && (
+      {mounted && open && createPortal(
         <>
           <div
-            className="fixed inset-0 z-[100] bg-black/50"
+            className="fixed inset-0 z-[200] bg-black/50"
             onClick={() => setOpen(false)}
           />
-          <div className="fixed inset-y-0 left-0 z-[101] flex w-64 flex-col bg-sidebar text-sidebar-foreground shadow-xl">
+          <div className="fixed inset-y-0 left-0 z-[201] flex w-64 flex-col bg-sidebar text-sidebar-foreground shadow-xl">
             <button
               aria-label="Close menu"
               onClick={() => setOpen(false)}
@@ -30,9 +34,10 @@ export function MobileNav({ role }: { role: Role }) {
             >
               <X className="h-5 w-5" />
             </button>
-            <SidebarNav role={role} onNavigate={() => setOpen(false)} />
+            <SidebarNav onNavigate={() => setOpen(false)} />
           </div>
-        </>
+        </>,
+        document.body
       )}
     </>
   );
