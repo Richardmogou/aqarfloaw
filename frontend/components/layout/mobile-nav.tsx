@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Menu, X } from "lucide-react";
-import { SidebarNav } from "./sidebar";
+import { Sidebar as SidebarNav } from "./sidebar";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -34,7 +34,7 @@ export function MobileNav() {
             >
               <X className="h-5 w-5" />
             </button>
-            <SidebarNav onNavigate={() => setOpen(false)} />
+            <SidebarNav onNavigate={() => setOpen(false)} className="flex w-full" />
           </div>
         </>,
         document.body

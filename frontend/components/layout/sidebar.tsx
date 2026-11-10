@@ -6,11 +6,11 @@ import { useT } from "@/lib/i18n/provider";
 import { NAV_ITEMS } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
-export function Sidebar() {
+export function Sidebar({ onNavigate, className }: { onNavigate?: () => void; className?: string } = {}) {
   const pathname = usePathname();
   const t = useT();
   return (
-    <aside className="hidden w-60 shrink-0 flex-col bg-sidebar text-sidebar-foreground md:flex">
+    <aside className={cn("hidden w-60 shrink-0 flex-col bg-sidebar text-sidebar-foreground md:flex", className)}>
       <div className="flex items-center gap-2 px-5 py-6 text-xl font-semibold">
         <Home className="h-6 w-6" /> AqarFlow
       </div>
@@ -21,6 +21,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-sidebar-active/60",
