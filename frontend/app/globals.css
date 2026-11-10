@@ -40,3 +40,22 @@
   * { @apply border-border; }
   body { @apply bg-background text-foreground antialiased; }
 }
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease both;
+  }
+  .animate-slide-up {
+    animation: slideUp 0.4s ease both;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
