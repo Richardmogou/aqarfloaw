@@ -22,11 +22,11 @@ def csrf_guard(request: Request, x_requested_with: str | None = Header(default=N
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Missing CSRF header")
 
 
-def get_current_session(request: Request, db: Session = Depends(get_db)) -> AuthSession:
+def find_active_session(request: Request, db: Session) -> AuthSession | None:
     token = request.cookies.get(settings.session_cookie_name)
     if not token:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Not authenticated")
-    auth_session = db.scalar(
+        return None
+    return db.scalar(
         select(AuthSession).join(User).where(
             AuthSession.token_hash == hash_session_token(token),
             AuthSession.revoked_at.is_(None),
@@ -34,9 +34,18 @@ def get_current_session(request: Request, db: Session = Depends(get_db)) -> Auth
             User.is_active.is_(True),
         )
     )
+
+
+def get_current_session(request: Request, db: Session = Depends(get_db)) -> AuthSession:
+    auth_session = find_active_session(request, db)
     if auth_session is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Not authenticated")
     return auth_session
+
+
+def get_optional_user(request: Request, db: Session = Depends(get_db)) -> User | None:
+    auth_session = find_active_session(request, db)
+    return auth_session.user if auth_session else None
 
 
 def get_current_user(auth_session: AuthSession = Depends(get_current_session)) -> User:
