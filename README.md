@@ -44,3 +44,5 @@ pytest
 |---|---|
 | [Day 1](docs/progress/day-1.md) | Foundation: frontend, API, database and migrations |
 | [Day 2](docs/progress/day-2.md) | Authentication, roles and protected routes, interface preferences |
+| [Day 3](docs/progress/day-3.md) | Properties interface and public landing page |
+| [Day 4](docs/progress/day-4.md) | Authentication fixes, build errors and login page redesign |
