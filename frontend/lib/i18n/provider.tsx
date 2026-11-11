@@ -14,3 +14,9 @@ export function useT() {
   const dict = dictionaries[useContext(LocaleContext)];
   return (key: string, vars?: Vars) => translate(dict, key, vars);
 }
+
+/** Texte bilingue en ligne : anglais d'abord, français ensuite. */
+export function useL() {
+  const locale = useContext(LocaleContext);
+  return (en: string, fr: string) => (locale === "fr" ? fr : en);
+}
