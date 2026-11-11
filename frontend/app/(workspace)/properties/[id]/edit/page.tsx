@@ -16,7 +16,7 @@ export default async function EditPropertyPage({ params }: { params: { id: strin
   const L = getL();
   return (
     <>
-      <PageHeader title={L("Edit property", "Modifier le bien")} back={{ href: `/properties/${property.id}`, label: L("Back to property", "Retour au bien") }} />
+      <PageHeader title={L("Edit property", "Modifier le bien")} description={`${property.reference_code} · ${property.title}`} back={{ href: `/properties/${property.id}`, label: L("Back to property", "Retour au bien") }} />
       <PropertyForm property={property} members={members} />
     </>
   );

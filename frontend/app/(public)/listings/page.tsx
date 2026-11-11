@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { ListingsExplorer } from "@/components/public/listings-explorer";
+import { ListingsUnavailable } from "@/components/public/listings-unavailable";
 import { getL } from "@/lib/i18n/server";
 import { parseListingParams, type ListingFilters, type PublicPropertyPage } from "@/lib/public-properties";
-import { serverApi } from "@/lib/server-api";
+import { publicApi } from "@/lib/server-api";
 
 export const metadata: Metadata = { title: "Properties for sale and rent in Pakistan" };
 
@@ -19,12 +20,14 @@ export default async function ListingsPage({ searchParams }: { searchParams: Rec
   for (const key of Object.keys(API_PARAM) as (keyof ListingFilters)[]) {
     if (filters[key]) query.set(API_PARAM[key], filters[key]);
   }
-  const results = await serverApi<PublicPropertyPage>(`/public/properties?${query}`);
+  const results = await publicApi<PublicPropertyPage>(`/public/properties?${query}`);
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold tracking-tight">{L("Properties in Pakistan", "Biens au Pakistan")}</h1>
       <p className="mt-2 text-muted-foreground">{L("Browse published listings and contact the agent directly.", "Parcourez les annonces publiées et contactez directement l'agent.")}</p>
-      <ListingsExplorer filters={filters} results={results} />
+      {results.ok
+        ? <ListingsExplorer filters={filters} results={results.data} />
+        : <div className="mt-8"><ListingsUnavailable retryHref="/listings" /></div>}
     </div>
   );
 }

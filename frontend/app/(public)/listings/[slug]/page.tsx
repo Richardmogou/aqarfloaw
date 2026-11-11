@@ -1,9 +1,11 @@
 import { Bath, Bed, CalendarClock, Home, ImageOff, MapPin, Maximize, type LucideIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { cache } from "react";
 import { ContactButtons } from "@/components/public/contact-buttons";
 import { InquiryForm } from "@/components/public/inquiry-form";
+import { ListingsUnavailable } from "@/components/public/listings-unavailable";
 import { PropertyCard } from "@/components/public/property-card";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
@@ -12,12 +14,14 @@ import { fmtPkr, fmtPkrFull } from "@/lib/format";
 import { getL, getT } from "@/lib/i18n/server";
 import { EN, PROPERTY_STATUS } from "@/lib/mock-data";
 import { listedDays, placeLabel, publicArea, type PublicProperty, type PublicPropertyPage } from "@/lib/public-properties";
-import { serverApi } from "@/lib/server-api";
+import { publicApi } from "@/lib/server-api";
 
-const getListing = cache((slug: string) => serverApi<PublicProperty>(`/public/properties/${encodeURIComponent(slug)}`));
+const getListing = cache((slug: string) => publicApi<PublicProperty>(`/public/properties/${encodeURIComponent(slug)}`));
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const p = await getListing(params.slug);
+  const result = await getListing(params.slug);
+  if (!result.ok) return { title: result.status === 404 ? "Property not found" : "Property" };
+  const p = result.data;
   const place = placeLabel(p);
   return {
     title: `${p.title}, ${place}`,
@@ -26,12 +30,21 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ListingDetailPage({ params }: { params: { slug: string } }) {
-  const p = await getListing(params.slug);
+  const result = await getListing(params.slug);
+  if (!result.ok && result.status === 404) notFound();
+  if (!result.ok) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <ListingsUnavailable retryHref={`/listings/${encodeURIComponent(params.slug)}`} />
+      </div>
+    );
+  }
+  const p = result.data;
   const L = getL();
   const t = await getT();
-  const similarPage = await serverApi<PublicPropertyPage>(
+  const similarResult = await publicApi<PublicPropertyPage>(
     `/public/properties?page_size=4&city=${encodeURIComponent(p.city)}&property_type=${encodeURIComponent(p.property_type)}`);
-  const similar = similarPage.items.filter((x) => x.slug !== p.slug).slice(0, 3);
+  const similar = similarResult.ok ? similarResult.data.items.filter((x) => x.slug !== p.slug).slice(0, 3) : [];
 
   const sale = p.purpose === "sale";
   const price = Number(p.price);
