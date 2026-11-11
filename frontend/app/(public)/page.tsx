@@ -1,11 +1,12 @@
 import { ArrowRight, Building2, DoorOpen, Home, Layers, MapPin, PhoneCall, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { HeroSearch } from "@/components/public/hero-search";
+import { ListingsUnavailable } from "@/components/public/listings-unavailable";
 import { PropertyCard } from "@/components/public/property-card";
 import { btn } from "@/components/ui/styles";
 import { getL, getT } from "@/lib/i18n/server";
 import type { PublicPropertyPage } from "@/lib/public-properties";
-import { serverApi } from "@/lib/server-api";
+import { publicApi } from "@/lib/server-api";
 import { cn } from "@/lib/utils";
 
 const CITIES = ["Islamabad", "Lahore", "Karachi"];
@@ -18,8 +19,8 @@ export default async function HomePage() {
   const L = getL();
   const t = await getT();
   const [latest, ...cityPages] = await Promise.all([
-    serverApi<PublicPropertyPage>("/public/properties?page_size=3"),
-    ...CITIES.map((city) => serverApi<PublicPropertyPage>(`/public/properties?page_size=1&city=${encodeURIComponent(city)}`)),
+    publicApi<PublicPropertyPage>("/public/properties?page_size=3"),
+    ...CITIES.map((city) => publicApi<PublicPropertyPage>(`/public/properties?page_size=1&city=${encodeURIComponent(city)}`)),
   ]);
   const why = [
     { icon: ShieldCheck, title: L("Reviewed listings", "Annonces relues"), text: L("Every listing is reviewed by the agency before it goes live.", "Chaque annonce est relue par l'agence avant sa publication.") },
@@ -48,12 +49,16 @@ export default async function HomePage() {
           <h2 id="cities" className="text-2xl font-bold">{L("Explore by city", "Explorer par ville")}</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {CITIES.map((c, i) => {
-              const n = cityPages[i].total;
+              const result = cityPages[i];
               return (
                 <Link key={c} href={`/listings?city=${c}`} className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-sidebar to-primary p-6 text-primary-foreground transition-transform hover:-translate-y-0.5">
                   <MapPin className="h-6 w-6 opacity-80" aria-hidden />
                   <p className="mt-6 text-xl font-bold">{c}</p>
-                  <p className="text-sm opacity-80">{n} {n === 1 ? L("property", "bien") : L("properties", "biens")}</p>
+                  <p className="text-sm opacity-80">
+                    {result.ok
+                      ? `${result.data.total} ${result.data.total === 1 ? L("property", "bien") : L("properties", "biens")}`
+                      : L("View properties", "Voir les biens")}
+                  </p>
                   <ArrowRight className="absolute bottom-6 right-6 h-5 w-5 transition-transform group-hover:translate-x-1" aria-hidden />
                 </Link>
               );
@@ -78,8 +83,10 @@ export default async function HomePage() {
             <h2 id="featured" className="text-2xl font-bold">{L("Latest properties", "Biens récents")}</h2>
             <Link href="/listings" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">{L("View all", "Voir tout")} <ArrowRight className="h-4 w-4" aria-hidden /></Link>
           </div>
-          {latest.items.length > 0 ? (
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{latest.items.map((p) => <PropertyCard key={p.slug} p={p} />)}</div>
+          {!latest.ok ? (
+            <div className="mt-6"><ListingsUnavailable retryHref="/" /></div>
+          ) : latest.data.items.length > 0 ? (
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{latest.data.items.map((p) => <PropertyCard key={p.slug} p={p} />)}</div>
           ) : (
             <p className="mt-6 rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">{L("No property is published yet. Check back soon.", "Aucun bien n'est encore publié. Revenez bientôt.")}</p>
           )}
