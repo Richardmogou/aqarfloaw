@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,6 +11,13 @@ class Settings(BaseSettings):
     environment: str = "development"
     session_cookie_name: str = "aqarflow_session"
     session_ttl_days: int = 7
+    media_root: str = "uploads"
+    storage_backend: Literal["local", "s3"] = "local"
+    s3_endpoint_url: str = ""
+    s3_region: str = "us-east-1"
+    s3_access_key: str = ""
+    s3_secret_key: str = ""
+    s3_bucket: str = "aqarflow-media"
 
     @property
     def cookie_secure(self) -> bool:
