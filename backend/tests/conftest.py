@@ -60,3 +60,11 @@ def make_user(db: Session, email: str, role: str = "agent", is_active: bool = Tr
 
 def login(client: TestClient, email: str, password: str = PASSWORD):
     return client.post("/api/v1/auth/login", json={"email": email, "password": password}, headers=CSRF)
+
+
+def make_member(db: Session, colleague: User, email: str, role: str = "agent", is_active: bool = True) -> User:
+    user = User(agency_id=colleague.agency_id, full_name="Member", email=email,
+                password_hash=hash_password(PASSWORD), role=role, is_active=is_active)
+    db.add(user)
+    db.flush()
+    return user
