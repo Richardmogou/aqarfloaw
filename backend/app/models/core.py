@@ -82,13 +82,14 @@ class Property(Base, TimestampMixin):
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     media: Mapped[list["PropertyMedia"]] = relationship(
         back_populates="property", order_by="PropertyMedia.sort_order")
+    assigned_agent: Mapped[User | None] = relationship()
 
 
 class PropertyMedia(Base):
     __tablename__ = "property_media"
     id: Mapped[uuid.UUID] = pk()
     property_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("properties.id", ondelete="CASCADE"), index=True)
-    storage_key: Mapped[str] = mapped_column(String(400))
+    storage_key: Mapped[str] = mapped_column(String(400), unique=True, index=True)
     caption: Mapped[str | None] = mapped_column(String(200))
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
     is_cover: Mapped[bool] = mapped_column(Boolean, default=False)

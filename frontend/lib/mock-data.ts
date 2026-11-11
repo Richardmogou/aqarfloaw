@@ -55,6 +55,8 @@ export const WORKSPACE_PROPERTIES: WorkspaceProperty[] = PROPERTIES.map((p) => (
 }));
 export const getProperty = (id: number) => WORKSPACE_PROPERTIES.find((p) => p.id === id);
 
+/** Biens visibles sur le site public : publiés uniquement */
+export const PUBLIC_PROPERTIES: Property[] = PROPERTIES.filter((p) => META[p.id].published);
 // --- Leads ---
 export interface Lead {
   id: number; name: string; city: string; propertyId: number; stage: string; source: string;
@@ -96,4 +98,44 @@ export function conflictIds(visits: Visit[]) {
     }
   }
   return ids;
+}
+// --- Libellés anglais (les libellés ci-dessus sont les originaux français) ---
+export const EN = {
+  propertyStatus: { draft: "Draft", available: "Available", reserved: "Reserved", under_offer: "Under offer", sold: "Sold", rented: "Rented", inactive: "Inactive" } as Record<string, string>,
+  leadStage: { new: "New", contacted: "Contacted", qualified: "Qualified", visit_scheduled: "Visit scheduled", negotiation: "Negotiation", converted: "Converted", lost: "Lost" } as Record<string, string>,
+  source: { website: "Website", phone: "Phone", whatsapp: "WhatsApp", instagram: "Instagram" } as Record<string, string>,
+};
+
+// --- Deals ---
+export const DEAL_STAGES = ["inquiry", "qualified", "visit", "offer", "negotiation", "booking", "documentation", "closed_won", "closed_lost"] as const;
+export const DEAL_STAGE: Record<string, { en: string; fr: string; tone: Tone }> = {
+  inquiry: { en: "Inquiry", fr: "Demande", tone: "neutral" },
+  qualified: { en: "Qualified", fr: "Qualifié", tone: "info" },
+  visit: { en: "Visit", fr: "Visite", tone: "info" },
+  offer: { en: "Offer", fr: "Offre", tone: "warning" },
+  negotiation: { en: "Negotiation", fr: "Négociation", tone: "warning" },
+  booking: { en: "Booking", fr: "Réservation", tone: "info" },
+  documentation: { en: "Documentation", fr: "Documents", tone: "info" },
+  closed_won: { en: "Closed won", fr: "Conclu", tone: "success" },
+  closed_lost: { en: "Closed lost", fr: "Perdu", tone: "danger" },
+};
+export interface Deal {
+  id: number; propertyId: number; leadId: number; agentId: string; stage: string;
+  offer: number | null; agreed: number | null; closeDate: string | null; history: { stage: string; at: string }[];
+}
+export const DEALS: Deal[] = [
+  { id: 1, propertyId: 4, leadId: 4, agentId: "sz", stage: "negotiation", offer: 160_000_000, agreed: null, closeDate: "2026-12-05",
+    history: [{ stage: "inquiry", at: "2026-10-28" }, { stage: "qualified", at: "2026-10-30" }, { stage: "visit", at: "2026-11-02" }, { stage: "offer", at: "2026-11-05" }, { stage: "negotiation", at: "2026-11-08" }] },
+  { id: 2, propertyId: 3, leadId: 3, agentId: "sz", stage: "offer", offer: 330_000_000, agreed: null, closeDate: "2026-12-20",
+    history: [{ stage: "inquiry", at: "2026-11-01" }, { stage: "qualified", at: "2026-11-03" }, { stage: "offer", at: "2026-11-09" }] },
+  { id: 3, propertyId: 5, leadId: 5, agentId: "mk", stage: "qualified", offer: null, agreed: null, closeDate: null,
+    history: [{ stage: "inquiry", at: "2026-11-05" }, { stage: "qualified", at: "2026-11-07" }] },
+];
+export const getDeal = (id: number) => DEALS.find((d) => d.id === id);
+export const isOpenDeal = (stage: string) => !stage.startsWith("closed");
+
+/** Une visite active du même agent chevauche-t-elle ce créneau ? */
+export function findConflict(agentId: string, start: string, minutes: number) {
+  const s = +new Date(start), e = s + minutes * 60_000;
+  return VISITS.find((v) => v.agentId === agentId && isUpcoming(v.status) && s < +new Date(v.start) + v.minutes * 60_000 && +new Date(v.start) < e);
 }

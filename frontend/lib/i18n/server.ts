@@ -10,3 +10,9 @@ export async function getT() {
   const dict = dictionaries[getLocale()];
   return (key: string, vars?: Vars) => translate(dict, key, vars);
 }
+
+/** Texte bilingue en ligne (composants serveur) : anglais d'abord, français ensuite. */
+export function getL() {
+  const isFr = getLocale() === "fr";
+  return (en: string, fr: string) => (isFr ? fr : en);
+}

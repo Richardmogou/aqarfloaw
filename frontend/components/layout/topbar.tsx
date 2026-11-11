@@ -2,26 +2,28 @@ import { Bell, Search } from "lucide-react";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ProfileMenu } from "@/components/layout/profile-menu";
 import type { CurrentUser } from "@/lib/auth";
+import { getL } from "@/lib/i18n/server";
 
 export function Topbar({ user }: { user: CurrentUser }) {
+  const L = getL();
   return (
-    <header className="flex h-16 items-center justify-between gap-4 border-b border-white/10 bg-white/60 px-4 backdrop-blur-md dark:bg-black/30 md:px-6">
-      <div className="flex items-center gap-2">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-border bg-card/90 px-4 backdrop-blur md:px-8">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         <MobileNav />
-        <label className="relative w-full max-w-md">
-          <span className="sr-only">Search</span>
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+        <label className="relative w-full max-w-xl">
+          <span className="sr-only">{L("Search", "Rechercher")}</span>
+          <Search className="absolute left-3.5 top-2.5 h-5 w-5 text-muted-foreground" aria-hidden />
           <input
             type="search"
-            placeholder="Search properties, leads, visits..."
-            className="h-9 w-full rounded-full border border-white/20 bg-white/50 pl-9 pr-3 text-sm backdrop-blur-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:bg-white/5"
+            placeholder={L("Search a property, a lead, a visit…", "Rechercher un bien, un lead, une visite…")}
+            className="h-10 w-full rounded-full border border-border bg-muted/60 pl-11 pr-4 text-sm placeholder:text-muted-foreground focus-visible:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </label>
       </div>
       <div className="flex items-center gap-3">
-        <button aria-label="Notifications" className="relative rounded-full p-2 text-muted-foreground transition-colors hover:bg-white/20 dark:hover:bg-white/10">
+        <button aria-label={L("Notifications", "Notifications")} className="relative rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted">
           <Bell className="h-5 w-5" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-danger" aria-hidden />
+          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-danger ring-2 ring-card" aria-hidden />
         </button>
         <ProfileMenu name={user.full_name} email={user.email} />
       </div>

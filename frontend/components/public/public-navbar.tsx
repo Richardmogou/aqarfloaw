@@ -4,44 +4,44 @@ import Link from "next/link";
 import { useState } from "react";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useT } from "@/lib/i18n/provider";
+import { btn } from "@/components/ui/styles";
+import { useL } from "@/lib/i18n/provider";
+import { cn } from "@/lib/utils";
 
 const LINKS = [
-  { href: "/#biens", key: "nav.properties" },
-  { href: "/agents", key: "nav.agents" },
-  { href: "/services", key: "nav.services" },
-  { href: "/a-propos", key: "nav.about" },
-  { href: "/contact", key: "nav.contact" },
+  { href: "/listings?purpose=sale", en: "Buy", fr: "Acheter" },
+  { href: "/listings?purpose=rent", en: "Rent", fr: "Louer" },
+  { href: "/agents", en: "Agents", fr: "Agents" },
+  { href: "/services", en: "Services", fr: "Services" },
+  { href: "/about", en: "About", fr: "À propos" },
+  { href: "/contact", en: "Contact", fr: "Contact" },
 ];
 
 export function PublicNavbar() {
   const [open, setOpen] = useState(false);
-  const t = useT();
+  const L = useL();
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-lg font-extrabold tracking-tight">AqarFlow</Link>
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="text-xl font-extrabold tracking-tight">AqarFlow</Link>
 
-        <nav aria-label={t("common.mainNav")} className="hidden items-center gap-8 md:flex">
+        <nav aria-label={L("Main navigation", "Navigation principale")} className="hidden items-center gap-1 lg:flex">
           {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              {t(l.key)}
+            <Link key={l.href} href={l.href} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+              {L(l.en, l.fr)}
             </Link>
           ))}
         </nav>
 
         <div className="flex items-center gap-2">
-          <LocaleSwitcher />
-          <ThemeToggle />
-          {/* TODO J2 : /login */}
-          <Link href="/login" className="hidden rounded-lg border border-border px-4 py-2 text-sm font-medium hover:border-primary md:block">
-            {t("nav.agencySpace")}
-          </Link>
+          <div className="hidden items-center gap-2 sm:flex"><LocaleSwitcher /><ThemeToggle /></div>
+          <Link href="/login" className={cn(btn.primary, "hidden px-4 py-2 sm:inline-flex")}>{L("Agency portal", "Espace agence")}</Link>
           <button
-            aria-label={open ? t("common.closeMenu") : t("common.openMenu")}
+            type="button"
+            aria-label={open ? L("Close menu", "Fermer le menu") : L("Open menu", "Ouvrir le menu")}
             aria-expanded={open}
             onClick={() => setOpen(!open)}
-            className="rounded-md p-2 md:hidden"
+            className="rounded-md p-2 lg:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -49,15 +49,13 @@ export function PublicNavbar() {
       </div>
 
       {open && (
-        <nav aria-label={t("common.mobileNav")} className="absolute left-0 right-0 z-50 border-t border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur md:hidden">
-          {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block rounded-md px-2 py-2.5 text-sm hover:bg-muted">
-              {t(l.key)}
+        <nav aria-label={L("Mobile menu", "Menu mobile")} className="border-t border-border px-4 py-3 lg:hidden">
+          {[...LINKS, { href: "/login", en: "Agency portal", fr: "Espace agence" }].map((l) => (
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block rounded-md px-2 py-2.5 text-sm font-medium hover:bg-muted">
+              {L(l.en, l.fr)}
             </Link>
           ))}
-          <Link href="/login" onClick={() => setOpen(false)} className="mt-2 block rounded-lg border border-primary px-2 py-2.5 text-center text-sm font-semibold text-primary hover:bg-primary/10">
-            {t("nav.agencySpace")}
-          </Link>
+          <div className="mt-3 flex items-center gap-2 border-t border-border pt-3 sm:hidden"><LocaleSwitcher /><ThemeToggle /></div>
         </nav>
       )}
     </header>

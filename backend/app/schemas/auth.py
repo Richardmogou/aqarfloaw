@@ -20,3 +20,10 @@ class CurrentUser(BaseModel):
     full_name: str
     email: str
     role: str
+
+
+class AgencyMember(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: uuid.UUID
+    full_name: str
+    role: str

@@ -16,7 +16,7 @@ export function SearchField({ placeholder, value, onChange }: { placeholder: str
   return (
     <label className="relative block min-w-[200px] flex-1">
       <span className="sr-only">{placeholder}</span>
-      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+      <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" aria-hidden />
       <input type="search" placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className={`${field} w-full pl-9`} />
     </label>
   );

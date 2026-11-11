@@ -54,7 +54,7 @@ export function ProfileMenu({ name, email }: { name: string; email: string }) {
         aria-label={t("common.account")}
         aria-expanded={open}
         onClick={handleOpen}
-        className="flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-white/10"
+        className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-muted"
       >
         <Avatar name={name} className="h-8 w-8" />
         <span className="hidden max-w-[120px] truncate text-sm font-medium sm:block">{name}</span>

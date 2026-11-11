@@ -7,7 +7,7 @@ import { StatCard } from "@/components/ui/stat-card";
 import { btn, td, th } from "@/components/ui/styles";
 import { Thumb } from "@/components/ui/thumb";
 import { fmtDate, fmtTime } from "@/lib/format";
-import { useT } from "@/lib/i18n/provider";
+import { useLocale, useT } from "@/lib/i18n/provider";
 import { VISITS, VISIT_STATUS, agentName, conflictIds, getLead, getProperty, isUpcoming } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ const group = (s: string) => (isUpcoming(s) ? "upcoming" : s === "completed" ? "
 
 export function VisitsView() {
   const t = useT();
+  const locale = useLocale();
   const [tab, setTab] = useState("all");
   const conflicts = conflictIds(VISITS);
   const count = (g: string) => VISITS.filter((v) => group(v.status) === g).length;
@@ -74,7 +75,7 @@ export function VisitsView() {
               return (
                 <tr key={v.id} className={cn("border-t border-border", clash && "bg-danger/10")}>
                   <td className={td}>
-                    <p className="font-medium">{fmtDate(v.start)}</p>
+                    <p className="font-medium">{fmtDate(v.start, locale)}</p>
                     <p className="text-muted-foreground">{fmtTime(v.start)} · {v.minutes} min</p>
                   </td>
                   <td className={td}>
