@@ -46,7 +46,7 @@ def test_public_payload_hides_internal_fields(client, listings):
     item = client.get(f"/api/v1/public/properties/{listings['published']['slug']}").json()
     for internal in ("id", "agency_id", "assigned_agent_id", "address", "is_published", "deleted_at", "created_at"):
         assert internal not in item
-    assert item["agent"] == {"full_name": "Member"}
+    assert item["agent"] == {"full_name": "Member", "phone": None}
     assert item["media"][0]["url"].startswith("/api/v1/media/properties/") and "id" not in item["media"][0]
 
 
