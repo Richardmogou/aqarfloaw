@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { getCurrentUser } from "@/lib/auth";
 import { getT } from "@/lib/i18n/server";
 import { safeRedirectPath } from "@/lib/safe-redirect";
+import { Logo } from "@/components/logo";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = { title: "Sign in · AqarFlow" };
@@ -27,7 +28,9 @@ export default async function LoginPage({ searchParams }: { searchParams: { next
         <img src={HERO_IMAGE} alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-sidebar via-sidebar/60 to-sidebar/30" />
 
-        <Link href="/" className="relative text-xl font-semibold">AqarFlow</Link>
+        <div className="relative">
+          <Logo href="/" className="text-white" />
+        </div>
         <h2 className="relative max-w-md text-4xl font-bold leading-tight">{t("auth.headline")}</h2>
         <p className="relative text-xs text-sidebar-foreground/70">{t("footer.rights", { year: new Date().getFullYear() })}</p>
       </aside>
