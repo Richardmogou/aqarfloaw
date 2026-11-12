@@ -20,7 +20,7 @@ const CITIES = [
     name: "Lahore",
     taglineEn: "Cultural Heart & Prime Sectors",
     taglineFr: "Cœur culturel & secteurs résidentiels",
-    image: "https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd1?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
   },
   {
     name: "Karachi",
