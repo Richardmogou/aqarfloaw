@@ -1,7 +1,7 @@
 "use client";
-import { Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LogoMark } from "@/components/logo";
 import { useL, useT } from "@/lib/i18n/provider";
 import { NAV_ITEMS } from "@/lib/nav";
 import { cn } from "@/lib/utils";
@@ -14,8 +14,9 @@ export function Sidebar({ onNavigate, className }: { onNavigate?: () => void; cl
   return (
     <aside className={cn("sticky top-0 hidden h-screen w-64 shrink-0 flex-col overflow-hidden bg-gradient-to-b from-sidebar to-[hsl(222_68%_10%)] text-sidebar-foreground md:flex", className)}>
       <div className="px-6 pb-6 pt-7">
-        <Link href="/dashboard" onClick={onNavigate} className="flex items-center gap-2.5 text-2xl font-bold tracking-tight">
-          <Home className="h-7 w-7" strokeWidth={2.2} aria-hidden /> AqarFlow
+        <Link href="/dashboard" onClick={onNavigate} className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-white">
+          <LogoMark size={32} />
+          <span>Aqar<span className="text-primary">Flow</span><span className="h-1.5 w-1.5 rounded-full bg-emerald-500 ml-0.5 inline-block" /></span>
         </Link>
         <p className="mt-2 text-sm leading-snug text-sidebar-foreground/60">{L("Real estate, further together", "L'immobilier plus loin ensemble")}</p>
       </div>

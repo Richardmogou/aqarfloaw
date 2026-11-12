@@ -38,10 +38,19 @@
     --danger: 0 84% 60%;
   }
   * { @apply border-border; }
-  body { @apply bg-background text-foreground antialiased; }
+  body { @apply bg-background text-foreground antialiased bg-grid-blueprint bg-fixed; }
 }
 
 @layer utilities {
+  .bg-grid-blueprint {
+    background-image:
+      radial-gradient(ellipse 90% 60% at 50% -15%, hsl(var(--primary) / 0.08), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 100% 35%, hsl(var(--success) / 0.05), transparent 60%),
+      linear-gradient(to right, hsl(var(--foreground) / 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.035) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    background-position: 0 0, 0 0, -1px -1px, -1px -1px;
+  }
   .animate-fade-in {
     animation: fadeIn 0.4s ease both;
   }

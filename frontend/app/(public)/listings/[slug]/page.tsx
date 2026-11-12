@@ -1,4 +1,4 @@
-import { Bath, Bed, CalendarClock, Home, ImageOff, MapPin, Maximize, type LucideIcon } from "lucide-react";
+import { Bath, Bed, CalendarClock, Home, ImageOff, MapPin, Maximize, ShieldCheck, type LucideIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,6 +15,7 @@ import { getL, getT } from "@/lib/i18n/server";
 import { EN, PROPERTY_STATUS } from "@/lib/mock-data";
 import { listedDays, placeLabel, publicArea, type PublicProperty, type PublicPropertyPage } from "@/lib/public-properties";
 import { publicApi } from "@/lib/server-api";
+import { telLink } from "@/lib/site";
 
 const getListing = cache((slug: string) => publicApi<PublicProperty>(`/public/properties/${encodeURIComponent(slug)}`));
 
@@ -80,64 +81,137 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
         </ol>
       </nav>
 
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{p.title}</h1>
-          <p className="mt-1 flex items-center gap-1.5 text-muted-foreground"><MapPin className="h-4 w-4" aria-hidden /> {place}</p>
-          <p className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-            <span>{L("Ref", "Réf")}: {p.reference_code}</span>
-            {p.status !== "available" && status && <span className="font-medium text-foreground">{L(EN.propertyStatus[p.status], status.label)}</span>}
+      <div className="flex flex-col gap-4 border-b border-border/70 pb-6 sm:flex-row sm:items-start sm:justify-between">
+        <div className="max-w-2xl">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              {L("Verified Property Listing", "Annonce certifiée conforme")}
+            </span>
+            <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+              {L("Ref:", "Réf :")} {p.reference_code}
+            </span>
+            {p.status !== "available" && status && (
+              <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                {L(EN.propertyStatus[p.status], status.label)}
+              </span>
+            )}
+          </div>
+          <h1 className="mt-2.5 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+            {p.title}
+          </h1>
+          <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4 text-primary shrink-0" aria-hidden />
+            <span>{place}</span>
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-3xl font-extrabold" title={fmtPkrFull(price)}>{fmtPkr(price)}{!sale && <span className="text-base font-normal text-muted-foreground"> {L("/ month", "/ mois")}</span>}</p>
-          <p className="text-xs text-muted-foreground">{fmtPkrFull(price)}</p>
+
+        <div className="flex flex-col sm:items-end justify-center rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {sale ? L("Asking price", "Prix de vente") : L("Rental rate", "Loyer mensuel")}
+          </p>
+          <p className="text-3xl font-black tracking-tight text-foreground sm:text-4xl" title={fmtPkrFull(price)}>
+            {fmtPkr(price)}
+            {!sale && <span className="text-base font-normal text-muted-foreground"> {L("/ month", "/ mois")}</span>}
+          </p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{fmtPkrFull(price)}</p>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[1.7fr_1fr]">
+      <div className="mt-8 grid gap-8 lg:grid-cols-[1.7fr_1fr]">
         <div className="space-y-6">
-          {p.media.length > 0 ? <Gallery images={p.media.map((m) => m.url)} alt={p.title} /> : (
-            <div className="grid h-72 place-items-center rounded-xl bg-muted text-sm text-muted-foreground sm:h-96">
-              <span className="flex flex-col items-center gap-2"><ImageOff className="h-8 w-8" aria-hidden />{L("No photos yet", "Pas encore de photos")}</span>
+          {p.media.length > 0 ? (
+            <Gallery images={p.media.map((m) => m.url)} alt={p.title} />
+          ) : (
+            <div className="grid h-72 place-items-center rounded-2xl bg-muted/60 text-sm text-muted-foreground sm:h-96 border border-border">
+              <span className="flex flex-col items-center gap-2">
+                <ImageOff className="h-8 w-8 opacity-40" aria-hidden />
+                {L("No photos yet", "Pas encore de photos")}
+              </span>
             </div>
           )}
 
-          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
             {specs.map(([Icon, k, v]) => (
-              <div key={k} className="bg-card p-4">
-                <Icon className="h-5 w-5 text-muted-foreground" aria-hidden />
-                <dt className="mt-2 text-xs text-muted-foreground">{k}</dt>
-                <dd className="font-semibold">{v}</dd>
+              <div key={k} className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm transition hover:border-primary/30">
+                <Icon className="h-5 w-5 text-primary" aria-hidden />
+                <dt className="mt-2 text-xs font-medium text-muted-foreground">{k}</dt>
+                <dd className="mt-1 text-sm font-bold text-foreground">{v}</dd>
               </div>
             ))}
-          </dl>
+          </div>
 
-          <Card title={L("Description", "Description")}>
+          <Card title={L("Property Overview & Details", "Présentation & Caractéristiques")}>
             <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-              {p.description || L("Contact the agent for more details about this property.", "Contactez l'agent pour plus de détails sur ce bien.")}
+              {p.description || L("Contact the listing agent for more details, floor plans, and viewing schedule for this property.", "Contactez l'agent pour plus de détails, plans et organisation de visite pour ce bien.")}
             </p>
           </Card>
 
-          <Card title={L("Location", "Localisation")}>
-            <p className="flex items-center gap-2 text-sm"><MapPin className="h-4 w-4 text-muted-foreground" aria-hidden /> {place}, Pakistan</p>
-            <p className="mt-2 text-xs text-muted-foreground">{L("Map coming soon.", "Carte bientôt disponible.")}</p>
+          <Card title={L("Location & Area", "Localisation & Quartier")}>
+            <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <MapPin className="h-4 w-4 text-primary" aria-hidden />
+              <span>{place}, Pakistan</span>
+            </p>
+            <div className="mt-3 overflow-hidden rounded-xl border border-border shadow-sm">
+              <iframe
+                title={L("Property location map", "Carte de localisation du bien")}
+                width="100%"
+                height="300"
+                className="block border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(`${place}, Pakistan`)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+              />
+            </div>
+            <p className="mt-2 text-right">
+              <a
+                href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(`${place}, Pakistan`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-primary hover:underline"
+              >
+                {L("View on OpenStreetMap", "Voir sur OpenStreetMap")} ›
+              </a>
+            </p>
           </Card>
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <Card>
+          <Card className="shadow-sm border-border/80">
             {p.agent && (
-              <div className="mb-4 flex items-center gap-3">
-                <Avatar name={p.agent.full_name} className="h-12 w-12 text-base" />
-                <div><p className="font-semibold">{p.agent.full_name}</p><p className="text-xs text-muted-foreground">{L("Listing agent", "Agent de l'annonce")}</p></div>
+              <div className="mb-5 flex items-center gap-3.5 pb-4 border-b border-border/70">
+                <Avatar name={p.agent.full_name} className="h-13 w-13 text-base shadow-sm ring-2 ring-primary/20" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-bold text-foreground truncate">{p.agent.full_name}</p>
+                    <span title={L("Certified agent", "Agent certifié")}>
+                      <ShieldCheck className="h-4 w-4 text-primary shrink-0" />
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{L("Certified Real Estate Agent", "Agent immobilier certifié")}</p>
+                  {p.agent.phone && (
+                    <a href={telLink(p.agent.phone || undefined)} className="mt-0.5 inline-block text-xs font-medium text-primary hover:underline">
+                      {p.agent.phone}
+                    </a>
+                  )}
+                </div>
               </div>
             )}
-            <ContactButtons message={message} callLabel={L("Call", "Appeler")} waLabel="WhatsApp" />
-            <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />{L("or send a message", "ou envoyez un message")}<span className="h-px flex-1 bg-border" /></div>
+            <ContactButtons message={message} callLabel={L("Call Agent", "Appeler l'agent")} waLabel="WhatsApp" phone={p.agent?.phone} />
+            <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="h-px flex-1 bg-border" />
+              <span>{L("or send an online inquiry", "ou envoyer un message")}</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
             <InquiryForm propertySlug={p.slug} propertyTitle={p.title} />
           </Card>
-          <p className="px-1 text-xs text-muted-foreground">{L("AqarFlow does not guarantee ownership or legal status. Always verify documents with a qualified professional.", "AqarFlow ne garantit ni la propriété ni le statut juridique. Vérifiez toujours les documents auprès d'un professionnel qualifié.")}</p>
+          <div className="rounded-xl border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground leading-relaxed">
+            <span className="font-semibold text-foreground">{L("Buyer protection note:", "Information acquéreur :")}</span>{" "}
+            {L(
+              "AqarFlow connects buyers directly with certified agencies. Always perform due diligence and verify ownership documents before financial commitment.",
+              "AqarFlow vous met directement en relation avec des agences certifiées. Vérifiez toujours les titres de propriété avant tout engagement financier."
+            )}
+          </div>
         </aside>
       </div>
 

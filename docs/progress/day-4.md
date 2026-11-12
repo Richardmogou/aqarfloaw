@@ -1,108 +1,170 @@
-# Day 4 — Authentication fixes, build errors, login page redesign and i18n
+# Day 4 — Public portal
 
-The authentication flow is fully operational end-to-end. Build errors blocking the Vercel deployment are resolved. The login page was redesigned. All workspace and public pages are fully internationalised (EN/FR).
+The public website is fully operational. Visitors can browse published properties, filter by purpose, city, type, price and bedrooms, view a full property detail page and submit an inquiry that creates a CRM lead.
 
-## Authentication fixes
+## Acceptance criteria covered
 
-### CSRF guard scoped correctly
-
-The `csrf_guard` dependency was applied globally to the entire `/api/v1` router, blocking `POST /auth/login` before any session existed. The fix registers `/auth/login` on a separate router that bypasses the guard, while all other mutating endpoints remain protected.
-
-`POST /api/v1/auth/login` now returns `204` from Swagger without requiring the `X-Requested-With` header.
-
-### CSRF header exposed in Swagger
-
-The `csrf_guard` dependency was refactored to declare `X-Requested-With` as a FastAPI `Header` parameter. Swagger UI now renders it as a visible input field on protected endpoints (`/logout`, `/logout-all`), making manual testing possible without a custom curl command.
-
-### Password field masked in Swagger
-
-The `password` field in `LoginRequest` is annotated with `json_schema_extra={"format": "password"}`. Swagger UI renders it as a masked input.
-
-## Demo account
-
-A one-click **demo login** button was added to the login form. It calls a local Next.js API route (`POST /api/demo-login`) that sets a mock session cookie. `getCurrentUser` intercepts the demo token and returns a hardcoded `Demo Admin` user without calling the backend. This allows full navigation of the workspace interface before the backend is connected.
-
-A `seed-demo` CLI command was added to the backend for when the database is ready:
-
-```bash
-python -m app.cli seed-demo
-# demo@aqarflow.com / Demo1234567!  →  Admin
-# agent@aqarflow.com / Demo1234567!  →  Agent
-```
-
-## Build errors resolved
-
-Three TypeScript/config errors were blocking the Vercel deployment:
-
-- `layout.tsx` was passing a `role` prop to `<Sidebar />` which did not accept it — prop removed.
-- `mobile-nav.tsx` was importing `SidebarNav` which was not exported from `sidebar.tsx` — import corrected. `Sidebar` was updated to accept optional `onNavigate` and `className` props for the mobile portal.
-- `dictionaries.ts` had a duplicate `description` key inside `workspace.properties` — renamed to `sectionDescription`.
-
-## Login page redesign
-
-The right-hand section of the login page was redesigned:
-
-- **Radial gradient background** using the primary blue colour variable.
-- **Animated floating shapes** — three blurred circles with staggered `animate-pulse` delays.
-- **Glassmorphism card** wrapping the form — `backdrop-blur-md`, semi-transparent background, subtle border.
-- **AqarFlow brand badge** visible on mobile (hidden on large screens where the left panel shows).
-- **SVG background** (`background-loginform.svg`) pinned to the bottom of the section at very low opacity as a subtle texture.
-
-## Public navbar — mobile login button
-
-The **Agency portal** button was hidden on screens below `lg` (1024 px). It is now visible from `md` (768 px) and the mobile burger menu includes a distinct styled login link at the bottom of the menu list.
-
-## i18n — full EN/FR coverage
-
-`DEFAULT_LOCALE = "en"` confirmed. Both EN and FR dictionaries cover all sections:
-
-| Section | Keys |
+| Criterion | Status |
 |---|---|
-| `nav` | All navigation labels |
-| `common` | Theme, language, menu controls |
-| `topbar` | Search placeholder |
-| `home` | Hero, search, featured, city/type counts |
-| `card` | Sale/rent badges, favourites, per month |
-| `type` | Villa, Apartment, Duplex, House |
-| `auth` | Login form, errors, demo |
-| `workspace.dashboard` | KPI cards, tasks, CTA |
-| `workspace.properties` | List, detail, form labels |
-| `workspace.leads` | List filters, table columns, detail, pipeline |
-| `workspace.visits` | Tabs, stat cards, table columns, conflict warning |
-| `workspace.deals` | Placeholder |
-| `workspace.team` | Placeholder |
-| `public` | Listing detail, contact, specs |
+| Public portal displays only published properties | ✅ |
+| Property search with essential filters and pagination | ✅ |
+| Visitor can submit an inquiry from a property page | ✅ |
+| Inquiry is saved as a CRM lead linked to the correct property | ✅ |
+| Responsive on desktop and mobile | ✅ |
 
-Server components use `getT()` from `lib/i18n/server.ts`. Client components use `useT()` from `lib/i18n/provider.tsx`. Locale is stored in a `locale` cookie.
+---
 
-`LeadsTable` and `VisitsView` were migrated from hardcoded French to `useT()`.
+## Public navbar
 
-## Docker — backend service added
+`PublicNavbar` is a sticky client component with:
 
-`docker-compose.yml` now includes the `backend` service:
+- AqarFlow logo linking to `/`.
+- Navigation links: Buy, Rent, Agents, Services, About, Contact (hidden below `lg`).
+- `LocaleSwitcher` and `ThemeToggle` (hidden below `sm`).
+- **Agency portal** button linking to `/login` (hidden below `sm`).
+- Mobile burger menu — inline dropdown with all nav links plus Agency portal and locale/theme controls.
 
-- Builds from `./backend/Dockerfile`.
-- `DATABASE_URL` is overridden in `environment` to point to the `db` hostname inside Docker (not `localhost`).
-- `MEDIA_ROOT` is set to `/app/uploads`.
-- A named `uploads` volume persists property photos across `docker compose down`.
+---
 
-```bash
-docker compose up -d          # starts db + backend
-docker compose up -d db       # db only (for local backend dev)
-```
+## Home page (`/`)
 
-## Vercel 500 fix
+The home page fetches live data from `GET /api/v1/public/properties` server-side. It includes:
 
-`serverApi` was throwing a raw `Error` when the backend was unreachable, causing Next.js to render a generic 500 page with no useful information. The fix:
+- **Hero section** — dark navy background with radial gradient and grid texture overlay. `HeroSearch` client component embedded in a card.
+- **Explore by city** — Islamabad, Lahore, Karachi cards with live property counts from the API.
+- **Browse by type** — Villa, Apartment, Duplex, House links to `/listings?type=…`.
+- **Latest properties** — 3 most recent published listings using `PropertyCard`. Shows an empty state if no properties are published yet. Shows `ListingsUnavailable` if the API is unreachable.
+- **Why AqarFlow** — three value proposition cards (reviewed listings, direct agent contact, local expertise).
+- **Agency CTA** — full-width banner linking to `/login`.
 
-- Wraps `fetch` in a `try/catch` and logs the real cause server-side via `console.error`.
-- Throws a clean user-facing message instead of the internal URL.
-- Errors from non-OK responses are also logged and replaced with a generic message.
+![Public landing page — hero and search](../screenshots/day-4/landing-page-hero.png)
+![Landing page — city explorer and trust bar](../screenshots/day-4/landing-page-cities.png)
 
-The root cause on Vercel was `BACKEND_URL` not being set in the project environment variables, causing `fetch` to target `http://localhost:8000` which is unreachable from Vercel's edge.
+### HeroSearch
 
-## Known limitations
+`HeroSearch` is a client component with a Buy/Rent toggle and a 6-column form:
 
-- Property photos are stored on the local filesystem; no cloud storage (S3/R2) yet.
-- The `InquiryForm` on public listing pages submits to a backend endpoint not yet implemented.
-- Agent-specific sidebar restrictions are enforced by the backend but not yet reflected in the navigation UI.
+- City select (Islamabad, Lahore, Karachi).
+- Area or keyword text input.
+- Property type select.
+- Max price select (amounts adapt to sale vs rent).
+- Bedrooms select (1+, 2+, 3+, 4+, 5+).
+- Find properties submit button → redirects to `/listings?…`.
+
+---
+
+## Listings page (`/listings`)
+
+`GET /api/v1/public/properties` is called server-side with filters parsed from URL search params. Results are passed to `ListingsExplorer`. If the API is unreachable, `ListingsUnavailable` is shown instead.
+
+![Listings explorer — list layout with filters](../screenshots/day-4/listings-explorer.png)
+![Listings explorer — active filter chips and results](../screenshots/day-4/listings-results.png)
+
+### ListingsExplorer
+
+`ListingsExplorer` is a client component with:
+
+- **Sidebar filters** (sticky on desktop, collapsible on mobile):
+  - Buy / Rent / All radio toggle.
+  - Keyword text input.
+  - City select.
+  - Property type select.
+  - Bedrooms buttons (Any, 1+, 2+, 3+, 4+, 5+).
+  - Min/max price inputs with formatted preview.
+  - Reset all filters link.
+- **Active filter chips** — each chip removes its filter on click.
+- **Sort** — newest, price ascending, price descending.
+- **Results count** with `aria-live`.
+- **List layout** `PropertyCard` with cover photo, specs, price and link to detail page.
+- **Pagination** — previous/next and numbered page buttons.
+- Filters are debounced (400 ms) and update the URL via `router.replace` without a full page reload.
+
+---
+
+## Property detail page (`/listings/[slug]`)
+
+`GET /api/v1/public/properties/{slug}` is called server-side. 404 → `notFound()`. API error → `ListingsUnavailable`.
+
+The page includes:
+
+- **JSON-LD** structured data (`RealEstateListing`) for SEO.
+- **`generateMetadata`** for dynamic `<title>` and `<meta description>`.
+- **Breadcrumb** — Home › For sale/rent › City › Property title.
+- **Title, location, reference code** and status badge (if not available).
+- **Price** — formatted in PKR with full amount tooltip; "/ month" suffix for rentals.
+- **Photo gallery** — reuses the workspace `Gallery` component (thumbnail strip, counter badge). Shows a placeholder if no photos.
+- **Specs grid** — Type, Bedrooms, Bathrooms, Area, Days listed (Today / Yesterday / N days ago).
+- **Description card** — free-text from the database, or a fallback message.
+- **Location card** — city and locality; map placeholder.
+- **Sticky contact sidebar**:
+  - Agent avatar and name if assigned.
+  - `ContactButtons` — Call (tel: link) and WhatsApp (wa.me link with pre-filled message).
+  - `InquiryForm` — full contact form.
+  - Legal disclaimer.
+- **Similar properties** — up to 3 properties from the same city and type.
+
+![Property detail — overview, gallery and specs](../screenshots/day-4/property-detail-overview.png)
+![Property detail — interactive location map](../screenshots/day-4/property-detail-map.png)
+![Property detail — certified agent contact card](../screenshots/day-4/property-detail-agent.png)
+
+### InquiryForm
+
+`InquiryForm` is a client component that posts to `POST /api/v1/public/inquiries`:
+
+- Fields: full name, phone (normalized), email (optional), message (pre-filled with property title), consent checkbox.
+- Honeypot field (`website`) for spam protection — hidden off-screen, not in tab order.
+- Client-side validation with field-level error messages.
+- API error mapping: 404 (listing no longer available), 422 (invalid data), generic network error.
+- Success state with a "Send another message" button.
+
+![Inquiry form — submission and lead capture](../screenshots/day-4/inquiry-form-submission.png)
+
+## Public footer
+
+`PublicFooter` is a 4-column server component with:
+
+- AqarFlow brand mark, mission statement and direct contact channels (Islamabad address, phone link, email, and WhatsApp direct support).
+- Properties column: quick links for sale, rent, Islamabad, Lahore, Karachi.
+- Property types column: luxury villas, modern apartments, duplexes & penthouses, commercial spaces, and certified agents.
+- Company column: About us, Services, Contact, and Agency portal login.
+- Legal & regulatory compliance bottom bar with copyright and Pakistani provincial real estate disclaimer.
+
+![Public footer — 4-column layout and contact](../screenshots/day-4/public-footer.png)
+
+---
+
+## Design system & branding enhancements
+
+- **SVG logo & mark**: Custom vector monogram component (`Logo` and `LogoMark` in `components/logo.tsx`, plus static assets in `public/logo.svg` and `public/logo-mark.svg`) combining the architectural structure ("Aqar") and dynamic upward flow ribbon ("Flow").
+- **Architectural blueprint background**: CSS utility `.bg-grid-blueprint` on `body` combining a 36×36px micro-grid at 3.5% adaptive opacity with ambient radial light halos, anchored with `bg-fixed`.
+- **PropertyCard**: Aspect ratio `16/10` with smooth zoom on hover, high-contrast purpose badges, frosted glass property type pill, favorite button, formatted specs row (beds, baths, area), and direct Call/WhatsApp action buttons. Supports both grid and list layouts.
+
+---
+
+## Backend — public inquiries endpoint
+
+`POST /api/v1/public/inquiries` accepts the inquiry form payload, validates and normalizes the phone number to E.164, creates a `Contact` record and a `Lead` record linked to the property (looked up by slug). The lead is created with stage `new` and source `website`. Spam requests caught by the honeypot field are rejected.
+
+![Workspace CRM — lead recorded in database](../screenshots/day-4/crm-lead-captured.png)
+
+---
+
+## Resolved improvements
+
+- **Interactive location map**: The property detail page features an embedded responsive map centered on the property locality and city, with a link to OpenStreetMap.
+- **Direct agent phone**: `PublicPropertyOut` exposes the assigned agent's phone number, enabling direct one-tap calling and WhatsApp messaging to the specific listing agent.
+
+---
+
+## Automated tests
+
+- Full backend test suite passing on PostgreSQL database: `51 passed, 1 skipped` (`pytest tests -q`).
+- Frontend TypeScript type check (`npx tsc --noEmit`) and ESLint (`npm run lint`): 0 errors, 0 warnings.
+
+![Automated test suite — 51 passed tests](../screenshots/day-4/backend-test-results.png)
+
+---
+
+## Scope boundaries (Phase 2)
+
+- Customer registration, saved properties and visitor inquiry history are scheduled for Phase 2 as per specification section 15.

@@ -18,7 +18,7 @@ export interface PublicProperty {
   status: string;
   published_at: string | null;
   media: { url: string; caption: string | null; is_cover: boolean }[];
-  agent: { full_name: string } | null;
+  agent: { full_name: string; phone?: string | null } | null;
 }
 
 export interface PublicPropertyPage {

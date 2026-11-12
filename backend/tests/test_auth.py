@@ -93,7 +93,7 @@ def test_logout_all_revokes_every_session(client, db):
 
 def test_mutation_without_csrf_header_is_forbidden(client, db):
     make_user(db, "agent@example.com")
-    response = client.post("/api/v1/auth/login", json={"email": "agent@example.com", "password": "x"})
+    response = client.post("/api/v1/auth/logout")
     assert response.status_code == 403
 
 

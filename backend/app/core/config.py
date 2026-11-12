@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     s3_access_key: str = ""
     s3_secret_key: str = ""
     s3_bucket: str = "aqarflow-media"
+    # Agency that receives general contact messages (no property attached). Empty = the only agency, if there is one.
+    public_agency_slug: str = ""
 
     @property
     def cookie_secure(self) -> bool:

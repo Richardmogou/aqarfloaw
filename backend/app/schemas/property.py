@@ -129,6 +129,7 @@ class PropertyPage(BaseModel):
 class PublicAgent(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     full_name: str
+    phone: str | None = None
 
 
 class PublicMedia(BaseModel):
