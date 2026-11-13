@@ -18,6 +18,16 @@ export function agoLabel(fr: string, locale: string) {
   return `${m[1]} ${unit} ago`;
 }
 
+export function fmtRelative(iso: string, locale = "en") {
+  const diffMin = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 60_000));
+  if (diffMin < 60) return locale === "fr" ? `Il y a ${diffMin} min` : `${diffMin} min ago`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return locale === "fr" ? `Il y a ${diffHours} h` : `${diffHours} h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (locale === "fr") return `Il y a ${diffDays} ${diffDays === 1 ? "jour" : "jours"}`;
+  return `${diffDays} ${diffDays === 1 ? "day" : "days"} ago`;
+}
+
 const trim = (x: number, d = 1) => String(Math.round(x * 10 ** d) / 10 ** d);
 
 /** Prix à la pakistanaise : PKR 18.5 Crore, PKR 85 Lakh, PKR 45,000 */
