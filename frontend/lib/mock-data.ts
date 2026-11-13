@@ -31,7 +31,14 @@ export const LEAD_STAGE: Record<string, Meta> = {
   converted: { label: "Converti", tone: "success" },
   lost: { label: "Perdu", tone: "danger" },
 };
-export const SOURCE_LABEL: Record<string, string> = { website: "Site web", phone: "Téléphone", whatsapp: "WhatsApp", instagram: "Instagram" };
+export const SOURCE_LABEL: Record<string, string> = {
+  website: "Site web",
+  phone: "Téléphone",
+  whatsapp: "WhatsApp",
+  instagram: "Instagram",
+  referral: "Recommandation",
+  walk_in: "Visite agence",
+};
 export const VISIT_STATUS: Record<string, Meta> = {
   requested: { label: "Demandée", tone: "info" },
   confirmed: { label: "Confirmée", tone: "info" },
@@ -103,7 +110,7 @@ export function conflictIds(visits: Visit[]) {
 export const EN = {
   propertyStatus: { draft: "Draft", available: "Available", reserved: "Reserved", under_offer: "Under offer", sold: "Sold", rented: "Rented", inactive: "Inactive" } as Record<string, string>,
   leadStage: { new: "New", contacted: "Contacted", qualified: "Qualified", visit_scheduled: "Visit scheduled", negotiation: "Negotiation", converted: "Converted", lost: "Lost" } as Record<string, string>,
-  source: { website: "Website", phone: "Phone", whatsapp: "WhatsApp", instagram: "Instagram" } as Record<string, string>,
+  source: { website: "Website", phone: "Phone", whatsapp: "WhatsApp", instagram: "Instagram", referral: "Referral", walk_in: "Walk-in" } as Record<string, string>,
 };
 
 // --- Deals ---
