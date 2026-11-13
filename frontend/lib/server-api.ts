@@ -13,6 +13,7 @@ export async function serverApi<T>(path: string): Promise<T> {
     throw new Error(`API unreachable at ${backendUrl} (is the backend running?)`, { cause });
   });
   if (res.status === 401) redirect("/login?expired=1");
+  if (res.status === 403) redirect("/forbidden");
   if (res.status === 404) notFound();
   if (!res.ok) throw new Error(`API ${res.status} on GET ${path}`);
   return res.json();

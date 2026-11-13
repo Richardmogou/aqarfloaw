@@ -9,7 +9,8 @@ import { Thumb } from "@/components/ui/thumb";
 import { requireUser } from "@/lib/auth";
 import { fmtDate, fmtPkrFull } from "@/lib/format";
 import { getL, getLocale, getT } from "@/lib/i18n/server";
-import { DEALS, EN, LEADS, PROPERTY_STATUS, VISITS, conflictIds, isOpenDeal, isUpcoming } from "@/lib/mock-data";
+import type { LeadPage } from "@/lib/leads";
+import { DEALS, EN, PROPERTY_STATUS, VISITS, conflictIds, isOpenDeal, isUpcoming } from "@/lib/mock-data";
 import { coverUrl, type PropertyPage } from "@/lib/properties";
 import { serverApi } from "@/lib/server-api";
 import { cn } from "@/lib/utils";
@@ -19,10 +20,12 @@ export default async function DashboardPage() {
   const L = getL();
   const locale = getLocale();
   const user = await requireUser();
-  const [recent, published, availablePublished] = await Promise.all([
+  const [recent, published, availablePublished, newLeadsPage, unassignedPage] = await Promise.all([
     serverApi<PropertyPage>("/properties?page_size=3"),
     serverApi<PropertyPage>("/properties?page_size=1&is_published=true"),
     serverApi<PropertyPage>("/properties?page_size=1&is_published=true&status=available"),
+    serverApi<LeadPage>("/leads?page_size=1&stage=new"),
+    serverApi<LeadPage>("/leads?page_size=1&unassigned=true"),
   ]);
 
   const tasks = [
@@ -32,8 +35,8 @@ export default async function DashboardPage() {
     { icon: UserCheck, tone: "bg-violet-500/15 text-violet-600", title: L("Lead assigned to an agent", "Lead attribué à un agent"), sub: L("Request for a plot", "Demande pour un terrain"), ago: L("3 h ago", "Il y a 3 h") },
   ];
 
-  const newLeads = LEADS.filter((l) => l.stage === "new").length;
-  const unassigned = LEADS.filter((l) => !l.agentId).length;
+  const newLeads = newLeadsPage.total;
+  const unassigned = unassignedPage.total;
   const upcoming = VISITS.filter((v) => isUpcoming(v.status)).length;
   const conflicts = conflictIds(VISITS).size;
   const openDeals = DEALS.filter((d) => isOpenDeal(d.stage)).length;

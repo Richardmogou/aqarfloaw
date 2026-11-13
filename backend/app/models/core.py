@@ -123,6 +123,8 @@ class Lead(Base, TimestampMixin):
     assigned_agent_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), index=True)
     next_follow_up_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     contact: Mapped[Contact] = relationship()
+    property: Mapped[Property | None] = relationship()
+    assigned_agent: Mapped[User | None] = relationship()
 
 
 class Activity(Base):
@@ -135,6 +137,7 @@ class Activity(Base):
     activity_type: Mapped[str] = mapped_column(String(30))  # note, call, stage_change, assignment
     body: Mapped[str | None] = mapped_column(Text)
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    user: Mapped[User | None] = relationship()
 
 
 class Visit(Base, TimestampMixin):

@@ -46,3 +46,4 @@ pytest
 | [Day 2](progress/day-2.md) | Authentication: login page and session endpoints |
 | [Day 3](progress/day-3.md) | Properties interface and public landing page |
 | [Day 4](progress/day-4.md) | Public portal: property catalog, listing explorer, detail page, lead capture and honeypot anti-spam |
+| [Day 5](progress/day-5.md) | CRM, leads, contacts, activity timeline and team management |
