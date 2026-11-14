@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { SESSION_COOKIE } from "@/lib/session-cookie";
 
-const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8000";
+const backendUrl = (process.env.BACKEND_URL ?? "http://127.0.0.1:8000").replace("://localhost:", "://127.0.0.1:");
 
 export async function serverApi<T>(path: string): Promise<T> {
   const token = cookies().get(SESSION_COOKIE)?.value;
@@ -19,7 +19,7 @@ export async function serverApi<T>(path: string): Promise<T> {
   return res.json();
 }
 
-const PUBLIC_TIMEOUT_MS = 5000;
+const PUBLIC_TIMEOUT_MS = 15000;
 
 export type PublicResult<T> = { ok: true; data: T } | { ok: false; status: number | null };
 
