@@ -47,3 +47,11 @@ pytest
 | [Day 3](progress/day-3.md) | Properties interface and public landing page |
 | [Day 4](progress/day-4.md) | Public portal: property catalog, listing explorer, detail page, lead capture and honeypot anti-spam |
 | [Day 5](progress/day-5.md) | CRM, leads, contacts, activity timeline and team management |
+| [Day 6](progress/day-6.md) | Visits scheduling, conflict detection, deals Kanban pipeline and live dashboard |
+| [Day 7](progress/day-7.md) | QA, responsive verification, idempotent demo seeding, deployment and handover docs |
+
+## Reference & Handover Guides
+
+- [API v1 Reference](api/endpoints.md)
+- [Admin & Agent User Guide](user-guides/admin-and-agent-guide.md)
+- [Architecture, Known Limitations & Handover Notes](architecture/handover-and-limitations.md)

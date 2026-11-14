@@ -1,4 +1,4 @@
-const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8000";
+const backendUrl = (process.env.BACKEND_URL ?? "http://127.0.0.1:8000").replace("://localhost:", "://127.0.0.1:");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

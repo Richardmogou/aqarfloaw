@@ -123,6 +123,14 @@ export function LeadActions({ initialStage, leadId }: {
             <span>{L("Schedule a visit", "Planifier une visite")}</span>
           </Link>
 
+          <Link
+            href={`/deals/new?lead=${leadId}`}
+            className="flex h-11 w-full items-center gap-3 rounded-xl bg-muted/70 px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+          >
+            <FileText className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+            <span>{L("Create a deal", "Créer un deal")}</span>
+          </Link>
+
           <button
             type="button"
             onClick={() => noteRef.current?.focus()}
