@@ -154,6 +154,9 @@ class Visit(Base, TimestampMixin):
     meeting_point: Mapped[str | None] = mapped_column(String(200))
     notes: Mapped[str | None] = mapped_column(Text)
     outcome: Mapped[str | None] = mapped_column(Text)
+    property: Mapped[Property] = relationship()
+    lead: Mapped[Lead] = relationship()
+    agent: Mapped[User] = relationship()
 
 
 class Deal(Base, TimestampMixin):
@@ -169,6 +172,10 @@ class Deal(Base, TimestampMixin):
     agreed_amount: Mapped[Decimal | None] = mapped_column(Numeric(14, 2))
     expected_close_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     notes: Mapped[str | None] = mapped_column(Text)
+    property: Mapped[Property] = relationship()
+    lead: Mapped[Lead] = relationship()
+    buyer_contact: Mapped[Contact] = relationship()
+    agent: Mapped[User] = relationship()
 
 
 class DealEvent(Base):
@@ -179,3 +186,4 @@ class DealEvent(Base):
     new_stage: Mapped[str] = mapped_column(String(20))
     changed_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    user: Mapped[User | None] = relationship()
