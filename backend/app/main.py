@@ -5,7 +5,9 @@ from app.api.v1.router import api_router
 from app.api.v1.auth import login_router
 from app.core.config import settings
 
-app = FastAPI(title="AqarFlow API", version="0.1.0")
+__author__ = "Nchifor Richard"
+
+app = FastAPI(title="AqarFlow API", version="0.1.0", contact={"name": "Nchifor Richard"})
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_list,
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 app.include_router(login_router, prefix="/api/v1", tags=["auth"])

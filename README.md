@@ -1,5 +1,7 @@
 # AqarFlow (MVP)
 
+**Author**: Nchifor Richard
+
 Pakistan-first real estate inventory, public property portal, CRM lead capture, visit scheduling, and deal pipeline platform.
 
 ---
