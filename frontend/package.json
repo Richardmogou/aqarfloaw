@@ -1,6 +1,7 @@
 {
   "name": "aqarflow-frontend",
   "version": "0.1.0",
+  "author": "Nchifor Richard",
   "private": true,
   "scripts": {
     "dev": "next dev",

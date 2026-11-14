@@ -122,7 +122,7 @@ export function PublicFooter() {
 
       <div className="border-t border-border px-4 py-6 text-xs text-muted-foreground">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-          <p>© {new Date().getFullYear()} AqarFlow. {L("All rights reserved.", "Tous droits réservés.")}</p>
+          <p>© {new Date().getFullYear()} AqarFlow · Nchifor Richard. {L("All rights reserved.", "Tous droits réservés.")}</p>
           <p className="max-w-xl md:text-right">
             {L(
               "Listings are provided by partner agencies. AqarFlow facilitates real estate operations across Pakistan.",

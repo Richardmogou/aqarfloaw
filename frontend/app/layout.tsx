@@ -10,6 +10,8 @@ const inter = Inter({ subsets: ["latin"], display: "swap" });
 export const metadata: Metadata = {
   title: { default: "AqarFlow | Property in Pakistan", template: "%s | AqarFlow" },
   description: "Buy, rent and sell property in Islamabad, Lahore and Karachi with agencies you can reach directly.",
+  authors: [{ name: "Nchifor Richard" }],
+  creator: "Nchifor Richard",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
