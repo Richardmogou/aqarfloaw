@@ -16,7 +16,7 @@ export function ListingsUnavailable({ retryHref }: { retryHref: string }) {
         </p>
       </div>
       <div className="flex flex-wrap justify-center gap-3">
-        <Link href={retryHref} className={btn.primary}><RotateCw className="h-4 w-4" aria-hidden /> {L("Try again", "Réessayer")}</Link>
+        <a href={retryHref} className={btn.primary}><RotateCw className="h-4 w-4" aria-hidden /> {L("Try again", "Réessayer")}</a>
         <Link href="/contact" className={btn.outline}><MessageCircle className="h-4 w-4" aria-hidden /> {L("Contact us", "Nous contacter")}</Link>
       </div>
     </div>
